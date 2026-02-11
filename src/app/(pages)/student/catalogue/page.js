@@ -7,7 +7,7 @@ export default function Page() {
         <div className="flex">
           <div>
             <h1 className="">&nbsp;</h1>
-            <h2 className="">Begin a study session</h2>
+            <h2 className="">Catalogue</h2>
           </div>
           <div className="ml-auto flex">
             <FrontPageButton
@@ -25,23 +25,6 @@ export default function Page() {
           </div>
         </div>
       </Header>
-
-      <div className=" flex flex-row min-h-screen justify-center items-center">
-        <FrontPageButton
-          text="Study Alone"
-          imageSource="/images/user (1).png"
-          imageHeight={150}
-          imageWidth={150}
-          altText="Study Alone"
-        />
-        <FrontPageButton
-          text="Study with Peers"
-          imageSource="/images/people.png"
-          imageHeight={203}
-          imageWidth={203}
-          altText="Study With Peers"
-        />
-      </div>
     </>
   );
 }

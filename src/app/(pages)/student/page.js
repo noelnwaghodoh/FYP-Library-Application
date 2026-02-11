@@ -7,29 +7,31 @@ export default function Page() {
     <main>
       <div>
         <Header text={"Welcome"}>
-          <Image
-            src="/images/ku_logo.png"
-            width={102}
-            height={102}
-            alt="Kingston University Logo"
-          />
-          <div>
-            <h1>Welcome</h1>
-            <p className="text-lg">K1234567</p>
-          </div>
-          <div className="ml-auto flex">
-            <FrontPageButton
-              imageSource="/images/add-user.png"
-              imageHeight={58}
-              imageWidth={58}
-              altText="add user button"
+          <div className="flex">
+            <Image
+              src="/images/ku_logo.png"
+              width={102}
+              height={102}
+              alt="Kingston University Logo"
             />
-            <FrontPageButton
-              imageSource="/images/menu.png"
-              imageHeight={58}
-              imageWidth={58}
-              altText="options menu"
-            />
+            <div>
+              <h1>Welcome</h1>
+              <p className="text-lg">K1234567</p>
+            </div>
+            <div className="ml-auto flex">
+              <FrontPageButton
+                imageSource="/images/add-user.png"
+                imageHeight={58}
+                imageWidth={58}
+                altText="add user button"
+              />
+              <FrontPageButton
+                imageSource="/images/menu.png"
+                imageHeight={58}
+                imageWidth={58}
+                altText="options menu"
+              />
+            </div>
           </div>
         </Header>
 
@@ -40,6 +42,7 @@ export default function Page() {
             imageHeight={150}
             imageWidth={150}
             altText="take notes"
+            link="student/notes"
           />
           <FrontPageButton
             text="Read"
@@ -47,6 +50,7 @@ export default function Page() {
             imageHeight={150}
             imageWidth={150}
             altText="read"
+            link="student/catalogue"
           />
 
           <FrontPageButton
@@ -55,6 +59,7 @@ export default function Page() {
             imageHeight={150}
             imageWidth={150}
             altText="study session"
+            link="student/study-session"
           />
         </div>
       </div>
