@@ -1,30 +1,34 @@
-import Header from "@/app/components/ui/header";
-import FrontPageButton from "@/app/components/ui/studentfrontpagebutton";
+"use client";
+import Header from "@/components/ui/header";
+import PageHeader from "@/components/ui/pageheader";
+import SearchBar from "@/components/ui/searchbar";
+import React, { useEffect, useState } from "react";
+import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 export default function Page() {
+  const [message, setMessage] = useState("Loading");
+
+  useEffect(() => {
+    fetch("http://localhost:8080/home")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setMessage(data[0].UserFirstName);
+      });
+  });
+
   return (
     <>
-      <Header text={"Welcome"}>
-        <div className="flex">
-          <div>
-            <h1 className="">&nbsp;</h1>
-            <h2 className="">Catalogue</h2>
-          </div>
-          <div className="ml-auto flex">
-            <FrontPageButton
-              imageSource="/images/add-user.png"
-              imageHeight={58}
-              imageWidth={58}
-              altText="add user button"
-            />
-            <FrontPageButton
-              imageSource="/images/menu.png"
-              imageHeight={58}
-              imageWidth={58}
-              altText="options menu"
-            />
-          </div>
+      <PageHeader title="Catalogue" />
+      <main>
+        <SearchBar />
+
+        <div>
+          <p>
+            You can Enter your course details to use view your suggested reading
+          </p>
+          <p>{message}</p>
         </div>
-      </Header>
+      </main>
     </>
   );
 }

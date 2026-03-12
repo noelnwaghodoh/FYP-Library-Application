@@ -1,5 +1,5 @@
-import Header from "../../components/ui/header";
-import FrontPageButton from "../../components/ui/studentfrontpagebutton";
+import Header from "../../../components/ui/header";
+import FrontPageButton from "../../../components/ui/studentfrontpagebutton";
 import Image from "next/image";
 
 export default function Page() {
