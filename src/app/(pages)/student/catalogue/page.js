@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
-import SearchBar from "@/components/ui/searchbar";
+import SearchForm from "@/components/ui/searchform";
 import React, { useEffect, useState } from "react";
 import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 export default function Page() {
@@ -20,7 +20,7 @@ export default function Page() {
     <>
       <PageHeader title="Catalogue" />
       <main>
-        <SearchBar />
+        <SearchForm />
 
         <div>
           <p>

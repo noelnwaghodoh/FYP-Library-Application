@@ -1,6 +1,10 @@
 import Image from "next/image";
+import { useState } from "react";
 
-export function SearchField() {
+export function SearchField({ searchResults }) {
+  
+  [searchValue, setSearchValue] = useState();
+  
   return (
     <>
       <div className="bg-white text-[#919191] rounded-full max-w-40 flex">
@@ -16,11 +20,16 @@ export function SearchField() {
   );
 }
 
-export default function SearchBar() {
+export default function SearchForm() {
   return (
     <div className="bg-[#000000]  text-white p-1 flex">
       <div>Search for a Book </div>
       <SearchField className="" />
+      <div>
+        {searchResults.map((item)) = (
+          <div className=""></div>
+      )}
+      </div>
     </div>
   );
 }

@@ -16,6 +16,7 @@ export default function Page() {
     bookIdentifier: "",
     bookReleaseDate: "",
     bookSubjects: "",
+    bookDescription: "",
     bookEdition: "",
     bookFileName: "",
   });
@@ -103,6 +104,8 @@ export default function Page() {
           <input name="bookSubjects" onChange={handleInput} />
           <label className="block">Book Edition</label>
           <input name="bookEdition" onChange={handleInput} />
+          <label className="block">Book Description</label>
+          <input name="bookDescription" onChange={handleInput} />
           <label className="block">Book Format</label>
           <input name="bookFormat" onChange={handleInput} />
           <label className="block">Book File</label>
