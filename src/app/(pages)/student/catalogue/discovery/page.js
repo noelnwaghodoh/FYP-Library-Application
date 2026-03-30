@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 export default function Page() {
   const [message, setMessage] = useState("Loading");
 
-  const [searchResultList, setSearchResultList] = usestate([]);
+  const [searchResultList, setSearchResultList] = useState([]);
 
   const searchParams = useSearchParams();
 
@@ -22,7 +22,7 @@ export default function Page() {
   const [searchQuery, setSearchQuery] = useState({
     searchText: searchParams.get("query") ? searchParams.get("query") : "",
   });
-  const [searchCompleteList, setSearchList] = useState([]);
+  const [searchCompleteList, setSearchCompleteList] = useState([]);
 
   function handleSearch(term) {
     params = new URLSearchParams(searchParams);
@@ -34,7 +34,7 @@ export default function Page() {
       JSON.stringify(searchQuery),
   );
 
-  console.log("from the child searchList is " + searchList);
+  console.log("from the child searchList is " + searchResultList);
   return (
     <>
       <PageHeader title="Catalogue" />
@@ -42,7 +42,7 @@ export default function Page() {
         <CatalogueSearchBar
           searchQueryValue={searchQuery}
           searchListValue={searchCompleteList}
-          setSearchListValue={setSearchList}
+          setSearchListValue={setSearchCompleteList}
           setSearchQueryValue={setSearchQuery}
           handleClickButton={handleSearch}
         />
