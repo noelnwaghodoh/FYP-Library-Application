@@ -24,6 +24,8 @@ export default function Page() {
   // Set the file name into
   const [file, setFile] = useState(null);
 
+  const [thumbnail, setThumnnail] = useState(null);
+
   function handleFileChange(e) {
     if (e.target.files) {
       setFile(e.target.files[0]);
@@ -33,6 +35,8 @@ export default function Page() {
       });
     }
   }
+
+  function generateThumbnail() {}
 
   const handleBookSubmit = async (event) => {
     event.preventDefault();
@@ -50,11 +54,19 @@ export default function Page() {
       const reader = new FileReader();
 
       reader.onload = async (event) => {
+        const extension = file.name.slice(str.lastIndexOf("."));
+        mimeType = "";
+        if (extension === ".epub") {
+          mimeType = "application/epub+zip";
+        }
+        if (extension === ".pdf") {
+          mimeType = "application/pdf";
+        }
         const blob = new window.Blob([new Uint8Array(event.target.result)], {
-          type: "application/epub+zip",
+          type: mimeType,
         });
 
-        const query = { fileName: file.name, fileType: "application/epub+zip" };
+        const query = { fileName: file.name, fileType: mimeType };
         const params = new URLSearchParams();
         params.append("fileName", file.name);
         params.append("fileType", "application/epub+zip");
