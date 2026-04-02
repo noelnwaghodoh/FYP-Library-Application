@@ -6,6 +6,7 @@ import Image from "next/image";
 import Form from "next/form";
 import axios from "axios";
 import { useState } from "react";
+import { Familjen_Grotesk } from "next/font/google";
 
 export default function Page() {
   const [values, setValues] = useState({
@@ -23,9 +24,10 @@ export default function Page() {
 
   // Set the file name into
   const [file, setFile] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const [thumbnail, setThumnnail] = useState(null);
-
+  console.log(values.bookFileName);
   function handleFileChange(e) {
     if (e.target.files) {
       setFile(e.target.files[0]);
@@ -36,10 +38,33 @@ export default function Page() {
     }
   }
 
-  function generateThumbnail() {}
-
   const handleBookSubmit = async (event) => {
     event.preventDefault();
+    setErrorMsg("");
+
+    let mimeType = "";
+    if (file) {
+      const extension = file.name
+        .slice(file.name.lastIndexOf("."))
+        .toLowerCase();
+      if (extension === ".epub") {
+        mimeType = "application/epub+zip";
+      } else if (extension === ".pdf") {
+        mimeType = "application/pdf";
+      } else {
+        setErrorMsg("Error: Only .pdf and .epub files are allowed.");
+        return;
+      }
+
+      const url = await getUploadURL(file.name, mimeType);
+
+      console.log("url is" + url);
+      const successfulUpload = await uploadFile(file, url);
+
+      if (successfulUpload === true) {
+        const tellServerofUpload = await tellServer(file.name);
+      }
+    }
 
     await axios
       .post("http://localhost:8080/catalogue", values)
@@ -51,41 +76,70 @@ export default function Page() {
       });
 
     if (file) {
-      const reader = new FileReader();
+      /*const reader = new FileReader();
 
       reader.onload = async (event) => {
-        const extension = file.name.slice(str.lastIndexOf("."));
-        mimeType = "";
-        if (extension === ".epub") {
-          mimeType = "application/epub+zip";
-        }
-        if (extension === ".pdf") {
-          mimeType = "application/pdf";
-        }
         const blob = new window.Blob([new Uint8Array(event.target.result)], {
           type: mimeType,
         });
 
-        const query = { fileName: file.name, fileType: mimeType };
         const params = new URLSearchParams();
         params.append("fileName", file.name);
-        params.append("fileType", "application/epub+zip");
+        params.append("fileType", mimeType);
 
         const res = await fetch(`http://localhost:8080/upload?${params}`);
-        console.log("http://localhost:8080/upload?${params}");
+        console.log(`http://localhost:8080/upload?${params}`);
         const data = await res.json();
         console.log(data);
         console.log("uploading...");
-        await fetch(data.signedUrl, {
+        const uploadResponse = await fetch(data.signedUrl, {
           method: "PUT",
           body: blob,
         });
-        await response.text();
-        return response.ok;
+        await uploadResponse.text();
+        return uploadResponse.ok;
       };
       reader.readAsArrayBuffer(file);
+      */
     }
   };
+
+  async function getUploadURL(fileName, fileMimeType) {
+    const params = new URLSearchParams();
+    params.append("fileName", fileName);
+    params.append("fileType", fileMimeType);
+    const response = await fetch(`http://localhost:8080/upload?${params}`);
+    const data = await response.json();
+
+    console.log(JSON.stringify(data));
+    return data.url;
+  }
+
+  async function uploadFile(filetoUpload, uploadURL) {
+    console.log("uploadURL is " + uploadURL);
+    const response = await fetch(uploadURL, {
+      method: "PUT",
+      body: filetoUpload,
+    });
+
+    await response.text();
+
+    return response.ok;
+  }
+
+  async function tellServer(newFileKey) {
+    
+    const response = await fetch("http://localhost:8080/uploadcomplete", {
+
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileKey: newFileKey }),
+    });
+    await response.text();
+    return response.ok;
+  }
   const handleInput = (event) => {
     setValues((prev) => ({
       ...prev,
@@ -96,6 +150,7 @@ export default function Page() {
   return (
     <main>
       <p>{file ? file.name : "no file"} </p>
+      {errorMsg && <p className="text-red-500 font-bold">{errorMsg}</p>}
       <div>
         <PageHeader title="Welcome , Staff" />
 
@@ -118,8 +173,6 @@ export default function Page() {
           <input name="bookEdition" onChange={handleInput} />
           <label className="block">Book Description</label>
           <input name="bookDescription" onChange={handleInput} />
-          <label className="block">Book Format</label>
-          <input name="bookFormat" onChange={handleInput} />
           <label className="block">Book File</label>
           <input
             type="file"
