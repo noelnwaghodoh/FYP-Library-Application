@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function BookCard(book) {
   // Extract year from releaseDate or default to "YYYY"
   let year = "YYYY";
@@ -12,23 +14,22 @@ export function BookCard(book) {
 
   const title = book.title || "Book Title";
   const author = book.author || "Author";
+  
+  // Safely grab the filename by checking if it exists first
+  const parts = book.BookFileName ? book.BookFileName.split(".") : ["default_thumbnail"];
+  const bookThumbnailName = "thumb+"+parts[0];
 
   return (
     <div className="flex items-center gap-3 p-2 w-max transition-colors rounded-md hover:bg-gray-50">
-      <div className="flex-shrink-0">
-        <svg 
-          width="32" 
-          height="40" 
-          viewBox="0 0 24 25" 
-          fill="none" 
-          stroke="#1f2937" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <rect x="4" y="2" width="16" height="20" rx="2.5" ry="2.5"></rect>
-          <path d="M4 17h16"></path>
-        </svg>
+          <div className="flex-shrink-0">
+        
+       <Image
+       src={`https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/${bookThumbnailName}.jpg`}
+       width={32}
+       height={40}
+       alt={book.BookTitle || "Book Cover"}
+       unoptimized={true}
+       />
       </div>
       <div className="flex flex-col text-left">
         <h2 className="text-[14px] text-gray-900 leading-snug">
