@@ -7,12 +7,12 @@ import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 import CatalogueSearchBar from "@/components/ui/search";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
-
+import SearchResults from "../components/search-results";
 export default function Page() {
   const [message, setMessage] = useState("Loading");
 
   const [searchResultList, setSearchResultList] = useState([]);
-
+  const [books ,setBooks] = useState([]);
   const searchParams = useSearchParams();
 
   console.log(
@@ -24,9 +24,18 @@ export default function Page() {
   });
   const [searchCompleteList, setSearchCompleteList] = useState([]);
 
-  function handleSearch(term) {
-    params = new URLSearchParams(searchParams);
+  async function handleSearch(term)  {
+    const params = new URLSearchParams();
+     console.log("term is " + term);
+    params.append("searchText", term);
+    const response = await fetch(`http://localhost:8080/catalogue?${params}`);
+    const data = await response.json();
+    console.log("data is " + data);
+    setBooks(data);
+
     console.log("the search says yes");
+
+    return data;
   }
 
   console.log(
@@ -46,13 +55,16 @@ export default function Page() {
           setSearchQueryValue={setSearchQuery}
           handleClickButton={handleSearch}
         />
-
-        <div>
-          <p>
-            You can Enter your course details to use view your suggested reading
-          </p>
-          <p>{message}</p>
-        </div>
+        {books && books.length > 0 ? (
+          <SearchResults books={books} />
+        ) : (
+          <div>
+            <p>
+              You can Enter your course details to view your suggested reading
+            </p>
+            <p>{message}</p>
+          </div>
+        )}
       </main>
     </>
   );

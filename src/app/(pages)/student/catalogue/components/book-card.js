@@ -32,10 +32,10 @@ export function BookCard(book) {
       </div>
       <div className="flex flex-col text-left">
         <h2 className="text-[14px] text-gray-900 leading-snug">
-          {title}
+          {book.BookTitle}
         </h2>
         <p className="text-[12px] text-gray-800 tracking-wide mt-0.5">
-          {author}, {year}
+          {book.BookAuthor}, {book.BookYear}
         </p>
       </div>
     </div>

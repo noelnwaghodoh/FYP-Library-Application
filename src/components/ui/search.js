@@ -135,14 +135,20 @@ export default function CatalogueSearchBar({
         JSON.stringify(searchQueryValue),
     );
     const params = new URLSearchParams();
-    params.append("searchText", searchQueryValue.searchText);
+    params.append("query", searchQueryValue.searchText);
     const searchResults = await fetch(
       `http://localhost:8080/books/search?${params}`,
     );
 
     const data = await searchResults.json();
     console.log(data);
-    console.log(handleClickButton);
+    
+    // Execute the prop function passed from page.js (which is handleSearch)
+    if (handleClickButton) {
+      handleClickButton(searchQueryValue.searchText);
+    }
+
+    // Keep the local URL updating routing as well
     handleClickOfButton(searchQueryValue.searchText);
   };
 
