@@ -8,11 +8,15 @@ import CatalogueSearchBar from "@/components/ui/search";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import SearchResults from "../components/search-results";
+import { SuggestedReading } from "../components/suggested-reading";
+import { BookDisplay } from "../components/book-display";
+
 export default function Page() {
-  const [message, setMessage] = useState("Loading");
+  const [message, setMessage] = useState("");
 
   const [searchResultList, setSearchResultList] = useState([]);
-  const [books ,setBooks] = useState([]);
+  const [books, setBooks] = useState([]);
+  const [displayBook, setDisplayBook] = useState(null);
   const searchParams = useSearchParams();
 
   console.log(
@@ -32,6 +36,7 @@ export default function Page() {
     const data = await response.json();
     console.log("data is " + data);
     setBooks(data);
+    setDisplayBook(null);
 
     console.log("the search says yes");
 
@@ -55,15 +60,13 @@ export default function Page() {
           setSearchQueryValue={setSearchQuery}
           handleClickButton={handleSearch}
         />
-        {books && books.length > 0 ? (
-          <SearchResults books={books} />
+
+        {displayBook ? (
+          <BookDisplay book={displayBook} />
+        ) : books && books.length > 0 ? (
+          <SearchResults books={books} onBookSelect={(book) => setDisplayBook(book)} />
         ) : (
-          <div>
-            <p>
-              You can Enter your course details to view your suggested reading
-            </p>
-            <p>{message}</p>
-          </div>
+          <SuggestedReading message={message} />
         )}
       </main>
     </>

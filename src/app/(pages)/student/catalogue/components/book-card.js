@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export function BookCard(book) {
+export function BookCard({ handleClick, ...book }) {
   // Extract year from releaseDate or default to "YYYY"
   let year = "YYYY";
   if (book.releaseDate) {
@@ -20,7 +20,7 @@ export function BookCard(book) {
   const bookThumbnailName = "thumb+"+parts[0];
 
   return (
-    <div className="flex items-center gap-3 p-2 w-max transition-colors rounded-md hover:bg-gray-50">
+    <div className="flex items-center gap-3 p-2 w-max transition-colors rounded-md hover:bg-gray-50 cursor-pointer" onClick={handleClick}>
           <div className="flex-shrink-0">
         
        <Image

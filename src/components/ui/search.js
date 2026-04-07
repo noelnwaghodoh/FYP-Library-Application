@@ -79,7 +79,7 @@ export function SearchResults({ searchResults, setSearchQueryValue }) {
   );
 }
 
-export function Search({ onSearchChange, placeholder, searchQuery }) {
+export function Search({ onSearchChange, placeholder, searchQuery, onFocus, onBlur }) {
   const searchParams = useSearchParams();
   console.log(searchParams.get("query")?.toString());
   return (
@@ -90,6 +90,8 @@ export function Search({ onSearchChange, placeholder, searchQuery }) {
         value={searchQuery.searchText}
         placeholder={placeholder}
         onChange={onSearchChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </div>
   );
@@ -102,6 +104,7 @@ export default function CatalogueSearchBar({
   setSearchListValue,
   handleClickButton,
 }) {
+  const [isFocused, setIsFocused] = useState(false);
   const handleSearchChange = async (event) => {
     console.log(event);
     setSearchQueryValue({ searchText: event.target.value });
@@ -178,16 +181,20 @@ export default function CatalogueSearchBar({
               placeholder="Search for a book"
               onSearchChange={handleSearchChange}
               searchQuery={searchQueryValue}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             />
             <SearchSubmitImage
               className="grow-1"
               onSubmit={handleSearchSubmit}
             />
           </div>
-          <SearchResults
-            searchResults={searchListValue}
-            setSearchQueryValue={setSearchQueryValue}
-          />
+          {isFocused && (
+            <SearchResults
+              searchResults={searchListValue}
+              setSearchQueryValue={setSearchQueryValue}
+            />
+          )}
         </div>
       </div>
     </>
