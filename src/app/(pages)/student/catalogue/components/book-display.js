@@ -1,6 +1,9 @@
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export function BookDisplay({ book }) {
+  const router = useRouter();
   // Gracefully handle filename for the DigitalOcean URL
   const parts = book?.BookFileName ? book.BookFileName.split(".") : ["default_thumbnail"];
   const bookThumbnailName = "thumb+" + parts[0];
@@ -12,6 +15,16 @@ export function BookDisplay({ book }) {
   const description = book?.BookDescription || "This is placeholder text for the synopsis of the book. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
   const location = book?.Location || "Penrhyn Road Floor 2 area A";
 
+    function handleReadClick() {
+      const fileName = book?.BookFileName || "";
+      const bookID = book?.id || book?.BookID || "unknown";
+  
+      if (fileName.toLowerCase().endsWith(".epub")) {
+        router.push(`/student/catalogue/read/epub/${bookID}`);
+      } else {
+        router.push(`/student/catalogue/read/pdf/${bookID}`);
+      }
+    }
   return (
     <div className="flex flex-row gap-4 p-4 mt-2 w-full max-w-4xl bg-white text-black font-sans">
       
@@ -65,7 +78,7 @@ export function BookDisplay({ book }) {
               <span className="text-[#a1e582] font-medium mr-1 tracking-wide">Available at</span> 
               {location}
             </p>
-            <button className="mt-3.5 bg-[#2da1c2] hover:bg-[#258aa8] text-white py-[6px] px-4 rounded-md text-[14px] font-medium shadow-sm w-max transition-colors">
+            <button onClick={handleReadClick} className="mt-3.5 bg-[#2da1c2] hover:bg-[#258aa8] text-white py-[6px] px-4 rounded-md text-[14px] font-medium shadow-sm w-max transition-colors">
               Read Online
             </button>
           </div>

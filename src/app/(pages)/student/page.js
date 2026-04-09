@@ -1,6 +1,5 @@
-import PageHeader from "@/app/components/ui/pageheader";
-import Header from "../../components/ui/header";
-import FrontPageButton from "../../components/ui/studentfrontpagebutton";
+import PageHeader from "@/components/ui/pageheader";
+import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 import Image from "next/image";
 
 export default function Page() {
@@ -24,7 +23,7 @@ export default function Page() {
             imageHeight={150}
             imageWidth={150}
             altText="read"
-            link="student/catalogue"
+            link="student/catalogue/discovery"
           />
 
           <FrontPageButton
