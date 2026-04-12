@@ -1,12 +1,28 @@
+"use client";
 import PageHeader from "@/components/ui/pageheader";
 import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 import Image from "next/image";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 export default function Page() {
+
+
+   const [currentUser, setCurrentUser] = useState(null);
+     useEffect(() => {
+      // Ping your Express server to ask "who am I?" based on the session cookie
+      axios.get("http://localhost:8080/me", { withCredentials: true })
+        .then(res => {
+         // console.log("THE DATA IS : ",res.data);
+          setCurrentUser(res.data); // Now you have the user object!
+        })
+        .catch(err => console.log("Not logged in or session expired"));
+     }, []);
+  
+   const title = currentUser ? `Welcome ${currentUser?.UserFirstName} ${currentUser?.UserLastName}` : "Welcome to the Library App";
   return (
     <main>
       <div>
-        <PageHeader title="Begin a Study Session" />
+        <PageHeader title={title} />
 
         <div className=" flex flex-row min-h-screen justify-center items-center">
           <FrontPageButton

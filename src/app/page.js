@@ -3,7 +3,9 @@ import { SignInForm } from "@/auth/components/sign-in-form";
 import Header from "@/components/ui/header";
 import Image from "next/image";
 
+
 export default function Home() {
+
   return (
     <div className="min-h-screen bg-[#f3f4f6] flex flex-col font-sans">
       <Header>

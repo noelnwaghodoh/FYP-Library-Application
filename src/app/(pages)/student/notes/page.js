@@ -1,13 +1,26 @@
+"use client";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
 import { FolderCard, FileCard, AddFolderButton, AddFileButton } from "./note-util";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 export default function Page() {
 
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+
+   useEffect(() => {
+    // Ping your Express server to ask "who am I?" based on the session cookie
+    axios.get("http://localhost:8080/me", { withCredentials: true })
+      .then(res => {
+        setCurrentUser(res.data.user); // Now you have the user object!
+      })
+      .catch(err => console.log("Not logged in or session expired"));
+  }, []);
 
   
+
   return (
     <div className="min-h-screen bg-white">
       {/* Page Header pulling styles from existing central repository */}
