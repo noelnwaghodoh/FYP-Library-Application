@@ -108,7 +108,7 @@ export default function Page() {
     const params = new URLSearchParams();
     params.append("fileName", fileName);
     params.append("fileType", fileMimeType);
-    const response = await fetch(`http://localhost:8080/upload?${params}`);
+    const response = await fetch(`http://localhost:8080/catalogue/upload?${params}`);
     const data = await response.json();
 
     console.log(JSON.stringify(data));
