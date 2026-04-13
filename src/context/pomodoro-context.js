@@ -61,7 +61,20 @@ export function PomodoroProvider({ children }) {
           setTimeRemainingSeconds(remainingTicks);
           setTimerMode(parsed.timerMode);
         } else {
-          // The timer expired while they were logged out/closed tab over 20 mins ago
+          // The timer actually expired while they were in a different tab or during a hard refresh!
+          // We must trigger the popup natively instead of silently dropping it!
+          if (parsed.timerMode === "WORK") {
+            if (parsed.currentSession < parsed.totalSessions) {
+              setOverlayMessage(`Session ${parsed.currentSession} complete! Time for a short break.`);
+            } else {
+              setOverlayMessage("All sessions complete! Great work today.");
+            }
+          } else if (parsed.timerMode === "BREAK") {
+            setOverlayMessage("Break is over! Let's get back to studying.");
+          }
+          
+          setShowOverlayAlert(true);
+          setTimerMode("IDLE");
           localStorage.removeItem("pomodoroState");
         }
       } catch (e) {
