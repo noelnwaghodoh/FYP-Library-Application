@@ -28,10 +28,17 @@ function defHeader() {
   );
 }
 
+import { PomodoroProvider } from "../context/pomodoro-context";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {/* Safely mounting the global state clock engine at the absolute highest DOM boundary!! */}
+        <PomodoroProvider>
+          {children}
+        </PomodoroProvider>
+      </body>
     </html>
   );
 }

@@ -10,8 +10,7 @@ export default function FrontPageButton({
   altText,
   link,
 }) {
-  return (
-    <Link href={link ? link : "student"}>
+  const content = (
       <div className="p-5" onClick={handleClick}>
         <Image
           src={imageSource}
@@ -19,9 +18,19 @@ export default function FrontPageButton({
           height={imageHeight}
           alt={altText}
         />
-
-        <p className=" flex justify-center">{text}</p>
+        <p className="flex justify-center text-center mt-2">{text}</p>
       </div>
+  );
+
+  // If a click handler is provided but no link, render purely as an interactive button!
+  if (handleClick && !link) {
+    return <button type="button" className="focus:outline-none">{content}</button>;
+  }
+
+  // Otherwise, fallback exactly to original routing behavior
+  return (
+    <Link href={link ? link : "student"}>
+      {content}
     </Link>
   );
 }
