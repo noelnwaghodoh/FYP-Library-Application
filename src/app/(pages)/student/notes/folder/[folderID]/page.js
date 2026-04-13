@@ -19,7 +19,7 @@ export default function FolderPage() {
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 24;
 
   // Wrapper function cleanly opening the modal instead of instantly firing the generator
   const createFolder = () => {

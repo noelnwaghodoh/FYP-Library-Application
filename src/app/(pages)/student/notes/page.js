@@ -19,7 +19,7 @@ export default function Page() {
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 24;
 
   // Wrapper function firing open the Modal overlay instead of directly mutating database
   const createNewFolder = () => {
@@ -116,7 +116,7 @@ export default function Page() {
                 <FolderCard 
                   key={index} 
                   onClick={() => router.push(`/student/notes/folder/${folderId}`)}
-                  label={item.FolderName || item.title || `Folder ${index+1}`} 
+                  label={item.FolderName || item.title || `Untitled Folder`} 
                   hasDocs={item.hasDocs || false} 
                 />
               );
@@ -128,7 +128,7 @@ export default function Page() {
               <FileCard 
                 key={index} 
                 onClick={() => router.push(`/student/notes/${noteId}`)} 
-                label={item.NoteTitle || item.name || `File ${index+1}`} 
+                label={item.NoteTitle || item.name || `Untitled Note`} 
               />
             );
           })}
