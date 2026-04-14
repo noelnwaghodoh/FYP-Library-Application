@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/config";
 import React, { useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
@@ -154,7 +155,7 @@ export async function handleAddFolder(currentUser, folderName, parentFolderId, s
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/notes/folders", 
+      `${API_URL}/notes/folders`, 
       {
         name: folderName,
         FolderName: folderName,
@@ -187,7 +188,7 @@ export async function handleAddNote(currentUser, noteName, parentFolderId, setFi
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/notes", 
+      `${API_URL}/notes`, 
       {
         title: noteName,
         NoteTitle: noteName,

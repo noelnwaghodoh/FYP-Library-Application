@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/config";
 import Form from "next/form";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -30,7 +31,7 @@ export function SignInForm() {
     setErrorMessage(""); // clear previous errors
     
     axios.
-      post("http://localhost:8080/login", values, { withCredentials: true })
+      post(`${API_URL}/login`, values, { withCredentials: true })
       .then((res) => {
         if (res.data.Login) {
           // Safely check if finalUser array exists and has an element, otherwise fallback to root usertype

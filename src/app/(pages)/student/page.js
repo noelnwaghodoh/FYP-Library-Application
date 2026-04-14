@@ -1,4 +1,5 @@
-"use client";
+"use client";import { API_URL } from "@/config";
+
 import PageHeader from "@/components/ui/pageheader";
 import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 import Image from "next/image";
@@ -10,7 +11,7 @@ export default function Page() {
    const [currentUser, setCurrentUser] = useState(null);
      useEffect(() => {
       // Ping your Express server to ask "who am I?" based on the session cookie
-      axios.get("http://localhost:8080/me", { withCredentials: true })
+      axios.get(`${API_URL}/me`, { withCredentials: true })
         .then(res => {
          // console.log("THE DATA IS : ",res.data);
           setCurrentUser(res.data); // Now you have the user object!

@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 import PageHeader from "@/components/ui/pageheader";
 // Since we are inside /folder/[folderID], utils are two directories up!
@@ -53,7 +54,7 @@ export default function FolderPage() {
   }, [folderID]);
 
   function getCurrentUser() {
-    axios.get("http://localhost:8080/me", { withCredentials: true })
+    axios.get(`${API_URL}/me`, { withCredentials: true })
       .then(res => {
         setCurrentUser(res.data);
       })
@@ -64,7 +65,7 @@ export default function FolderPage() {
   function getNestedFiles() {
      // NOTE: I am defaulting to the singular pluralization "/notes/folder/" 
      // If your files explicitly route through somewhere else, rename this string!
-     axios.get("http://localhost:8080/notes/folders/" + folderID + "/files", { withCredentials: true })
+     axios.get(`${API_URL}/notes/folders/` + folderID + "/files", { withCredentials: true })
       .then(res => {
          const payload = res.data;
          console.log("RAW NESTED FILES FETCHED: ", payload);
@@ -82,7 +83,7 @@ export default function FolderPage() {
 
   // Using the endpoint you confirmed: /notes/folders/:folderID
   function getFolderContents() {
-    axios.get("http://localhost:8080/notes/folders/" + folderID, { withCredentials: true })
+    axios.get(`${API_URL}/notes/folders/` + folderID, { withCredentials: true })
       .then(res => {
         const payload = res.data;
         console.log("RAW NESTED FOLDERS FETCHED: ", payload);

@@ -1,4 +1,5 @@
-"use client";
+"use client";import { API_URL } from "@/config";
+
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -25,7 +26,7 @@ export default function ReaderPage({ params }) {
         const params = new URLSearchParams();
         console.log("term is " + usedParams.bookID);
         params.append("bookID", usedParams.bookID);
-        const res = await fetch(`http://localhost:8080/catalogue/id?${params}`);
+        const res = await fetch(`${API_URL}/catalogue/id?${params}`);
         const data = await res.json();
 
         console.log("THE DATA FROM THE CATALOGUE BY ID ROUTE IS : "+JSON.stringify(data));
@@ -36,7 +37,7 @@ export default function ReaderPage({ params }) {
             try {
               const urlParams = new URLSearchParams();
               urlParams.append("fileName", found.BookFileName);
-              const urlRes = await fetch(`http://localhost:8080/catalogue/signed-url?${urlParams}`);
+              const urlRes = await fetch(`${API_URL}/catalogue/signed-url?${urlParams}`);
               if (urlRes.ok) {
                 const urlData = await urlRes.json();
                 found.secureUrl = urlData.url;

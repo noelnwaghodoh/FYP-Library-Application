@@ -1,4 +1,5 @@
-"use client";
+"use client";import { API_URL } from "@/config";
+
 import PageHeader from "@/components/ui/pageheader";
 import Header from "@/components/ui/header";
 import FrontPageButton from "@/components/ui/studentfrontpagebutton";
@@ -82,7 +83,7 @@ export default function Page() {
     }
 
     await axios
-      .post("http://localhost:8080/catalogue", values, { withCredentials: true })
+      .post(`${API_URL}/catalogue`, values, { withCredentials: true })
       .then(function (response) {
         console.log(response);
         setIsSuccessModalOpen(true);
@@ -104,8 +105,8 @@ export default function Page() {
         params.append("fileName", file.name);
         params.append("fileType", mimeType);
 
-        const res = await fetch(`http://localhost:8080/upload?${params}`);
-        console.log(`http://localhost:8080/upload?${params}`);
+        const res = await fetch(`${API_URL}/upload?${params}`);
+        console.log(`${API_URL}/upload?${params}`);
         const data = await res.json();
         console.log(data);
         console.log("uploading...");
@@ -125,7 +126,7 @@ export default function Page() {
     const params = new URLSearchParams();
     params.append("fileName", fileName);
     params.append("fileType", fileMimeType);
-    const response = await fetch(`http://localhost:8080/catalogue/upload?${params}`, {
+    const response = await fetch(`${API_URL}/catalogue/upload?${params}`, {
       credentials: "include",
     });
     const data = await response.json();
@@ -148,7 +149,7 @@ export default function Page() {
 
   async function tellServer(newFileKey) {
     
-    const response = await fetch("http://localhost:8080/uploadcomplete", {
+    const response = await fetch(`${API_URL}/uploadcomplete`, {
 
       method: "PUT",
       headers: {

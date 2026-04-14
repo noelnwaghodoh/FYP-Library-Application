@@ -1,4 +1,5 @@
-"use client";
+"use client";import { API_URL } from "@/config";
+
 import React, { useState } from "react";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
@@ -23,7 +24,7 @@ export default function ManageCataloguePage() {
     try {
       const params = new URLSearchParams();
       params.append("searchText", term || "");
-      const response = await fetch(`http://localhost:8080/catalogue?${params}`);
+      const response = await fetch(`${API_URL}/catalogue?${params}`);
       const data = await response.json();
       setBooks(data || []);
     } catch (err) {
@@ -63,7 +64,7 @@ export default function ManageCataloguePage() {
     
     try {
       const targetId = bookToEdit.BookID || bookToEdit.id;
-      await axios.put(`http://localhost:8080/catalogue/${targetId}`, editValues, { withCredentials: true });
+      await axios.put(`${API_URL}/catalogue/${targetId}`, editValues, { withCredentials: true });
       
       // Mutate Table immediately
       setBooks((currentList) => currentList.map(b => {
@@ -90,7 +91,7 @@ export default function ManageCataloguePage() {
     
     console.log(`Executing two-phase commit deletion for book id: ${bookToDelete.BookID}`);
     try {
-      await axios.delete(`http://localhost:8080/catalogue/${bookToDelete.BookID}`, { withCredentials: true });
+      await axios.delete(`${API_URL}/catalogue/${bookToDelete.BookID}`, { withCredentials: true });
       // Purge locally from UI instantly so the user sees feedback
       setBooks((currentList) => currentList.filter(book => book.BookID !== bookToDelete.BookID));
       setIsDeleteModalOpen(false);

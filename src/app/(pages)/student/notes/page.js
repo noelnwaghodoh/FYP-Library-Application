@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/config";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
 import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal } from "./note-util";
@@ -50,7 +51,7 @@ export default function Page() {
   }, []);
 
   function getCurrentUser() {
-    axios.get("http://localhost:8080/me", { withCredentials: true })
+    axios.get(`${API_URL}/me`, { withCredentials: true })
       .then(res => {
         setCurrentUser(res.data); // Now you have the user object!
       })
@@ -59,7 +60,7 @@ export default function Page() {
   
   function getRootFolders() {
    
-    axios.get("http://localhost:8080/notes/folders", { withCredentials: true })
+    axios.get(`${API_URL}/notes/folders`, { withCredentials: true })
       .then(res => {
         // Defensively process the array whether it's raw or wrapped in an object
         const payload = res.data;
@@ -76,7 +77,7 @@ export default function Page() {
   }
   function getRootFiles() {
     console.log("THIS FUNCTION IS BEING CALLED IN THE FIRST PLACE")
-    axios.get("http://localhost:8080/notes", { withCredentials: true })
+    axios.get(`${API_URL}/notes`, { withCredentials: true })
       .then(res => {
         console.log("RAW FILES FETCHED FROM BACKEND: ", res.data);
         setFiles(res.data);

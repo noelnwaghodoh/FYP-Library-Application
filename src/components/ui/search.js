@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
@@ -116,12 +117,12 @@ export default function CatalogueSearchBar({
       params.append("searchText", event.target.value);
       console.log(params.toString());
       /* const newsearchResults = await axios.get(
-        "http://localhost:8080/books/search",
+        `${API_URL}/books/search`,
         { params: { searchText: event.target.value } },
       );
       */
       const newsearchResults = await fetch(
-        `http://localhost:8080/books?${params}`,
+        `${API_URL}/books?${params}`,
       );
 
       const data = await newsearchResults.json();
@@ -140,7 +141,7 @@ export default function CatalogueSearchBar({
     const params = new URLSearchParams();
     params.append("query", searchQueryValue.searchText);
     const searchResults = await fetch(
-      `http://localhost:8080/books/search?${params}`,
+      `${API_URL}/books/search?${params}`,
     );
 
     const data = await searchResults.json();

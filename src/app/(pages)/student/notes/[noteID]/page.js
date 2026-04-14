@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -17,7 +18,7 @@ export default function NoteEditorPage() {
   // Automatically fetch existing data from database on mount!
   useEffect(() => {
     if (noteID) {
-      axios.get("http://localhost:8080/notes/" + noteID, { withCredentials: true })
+      axios.get(`${API_URL}/notes/` + noteID, { withCredentials: true })
         .then(res => {
           // Assuming your backend returns the Note object directly or wrapped in data.note
           const fetchedNote =  res.data[0]; 
@@ -53,7 +54,7 @@ export default function NoteEditorPage() {
     console.log("Preparing to save note...", { title, content });
     // TODO: Add backend API call here
 
-    axios.put("http://localhost:8080/notes/" + noteID, { title, content }, { withCredentials: true })
+    axios.put(`${API_URL}/notes/` + noteID, { title, content }, { withCredentials: true })
       .then(res => {
         console.log("Note saved successfully", res.data);
       })

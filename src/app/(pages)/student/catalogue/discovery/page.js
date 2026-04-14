@@ -1,4 +1,5 @@
-"use client";
+"use client";import { API_URL } from "@/config";
+
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
 import SearchForm from "@/components/ui/search";
@@ -32,7 +33,7 @@ export default function Page() {
     const params = new URLSearchParams();
      console.log("term is " + term);
     params.append("searchText", term);
-    const response = await fetch(`http://localhost:8080/catalogue?${params}`);
+    const response = await fetch(`${API_URL}/catalogue?${params}`);
     const data = await response.json();
     console.log("data is " + data);
     setBooks(data);
