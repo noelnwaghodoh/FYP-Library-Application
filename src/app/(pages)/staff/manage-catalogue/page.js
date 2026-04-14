@@ -108,7 +108,7 @@ export default function ManageCataloguePage() {
       <PageHeader title="Manage the Catalogue" />
       
       {/* Black Subheader matching Wireframe */}
-    
+      <React.Suspense fallback={<div className="bg-[#000000] text-white p-2 text-sm italic">Loading search engine...</div>}>
            <CatalogueSearchBar 
              searchQueryValue={searchQuery}
              searchListValue={searchCompleteList}
@@ -116,6 +116,7 @@ export default function ManageCataloguePage() {
              setSearchQueryValue={setSearchQuery}
              handleClickButton={executeCatalogueSearch} 
            />
+      </React.Suspense>
      
       
       <main className="min-h-[70vh] bg-gray-50 p-8">

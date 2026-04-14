@@ -12,7 +12,7 @@ import SearchResults from "../components/search-results";
 import { SuggestedReading } from "../components/suggested-reading";
 import { BookDisplay } from "../components/book-display";
 
-export default function Page() {
+function DiscoveryContent() {
   const [message, setMessage] = useState("");
 
   const [searchResultList, setSearchResultList] = useState([]);
@@ -71,5 +71,14 @@ export default function Page() {
         )}
       </main>
     </>
+  );
+}
+
+
+export default function Page() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center font-semibold text-gray-500">Loading Discovery Environment...</div>}>
+      <DiscoveryContent />
+    </React.Suspense>
   );
 }
