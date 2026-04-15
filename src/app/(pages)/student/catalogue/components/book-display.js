@@ -12,8 +12,8 @@ export function BookDisplay({ book }) {
   const year = book?.BookYear || "YYYY";
   const title = book?.BookTitle || "Book Title 1";
   const author = book?.BookAuthor || "Author";
-  const description = book?.BookDescription || "This is placeholder text for the synopsis of the book. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
-  const location = book?.Location || "Penrhyn Road Floor 2 area A";
+  const description = book?.ItemDescription || "This is placeholder text for the synopsis of the book. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
+  
 
     function handleReadClick() {
       const fileName = book?.BookFileName || "";
@@ -55,7 +55,7 @@ export function BookDisplay({ book }) {
         <div className="flex flex-row gap-5 items-stretch">
           
           {/* Thumbnail Box */}
-          <div className="flex justify-center items-center w-[140px] h-[140px] border-[1.5px] border-black rounded-md bg-white flex-shrink-0 p-2">
+          <div className="flex justify-center items-center w-[120px] h-[120px] border-[1.5px] rounded-md bg-white flex-shrink-0 p-2">
              <Image
                 src={`https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/${bookThumbnailName}.jpg`}
                 width={120}
