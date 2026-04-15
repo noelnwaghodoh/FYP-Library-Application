@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* Safely mounting the global state clock engine at the absolute highest DOM boundary!! */}
+        {/* Safely  */}
         <PomodoroProvider>
           {children}
         </PomodoroProvider>

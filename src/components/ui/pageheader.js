@@ -1,5 +1,6 @@
 import FrontPageButton from "./studentfrontpagebutton";
 import Header from "./header";
+import Home from "./home";
 
 export default function PageHeader({ title }) {
   return (
