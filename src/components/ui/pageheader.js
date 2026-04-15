@@ -10,6 +10,7 @@ export default function PageHeader({ title }) {
           <h2 className="">{title}</h2>
         </div>
         <div className="ml-auto flex">
+          <Home />
           <FrontPageButton
             imageSource="/images/add-user.png"
             imageHeight={58}
