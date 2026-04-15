@@ -29,18 +29,7 @@ export default function PageHeader({ title, backRoute }) {
             <Home />
           </div>
           <div className="flex gap-2">
-            <FrontPageButton
-              imageSource="/images/add-user.png"
-              imageHeight={50}
-              imageWidth={50}
-              altText="add user button"
-            />
-            <FrontPageButton
-              imageSource="/images/menu.png"
-              imageHeight={50}
-              imageWidth={50}
-              altText="options menu"
-            />
+         
           </div>
         </div>
       </div>
