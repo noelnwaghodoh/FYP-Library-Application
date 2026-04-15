@@ -52,7 +52,7 @@ function DiscoveryContent() {
   console.log("from the child searchList is " + searchResultList);
   return (
     <>
-      <PageHeader title="Catalogue" />
+      <PageHeader title="Catalogue" backRoute="/student" />
       <main>
         <CatalogueSearchBar
           searchQueryValue={searchQuery}

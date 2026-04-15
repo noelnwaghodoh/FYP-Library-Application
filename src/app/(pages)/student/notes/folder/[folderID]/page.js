@@ -119,7 +119,7 @@ export default function FolderPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Top UI Header logic - Include a slight visual cue we are in a subfolder */}
-      <PageHeader title="Folder Explorer" />
+      <PageHeader title="Folder Explorer" backRoute="/student/notes" />
 
       <main className="px-10 py-12">
         <div className="flex flex-row gap-6 flex-wrap items-start max-w-4xl">

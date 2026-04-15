@@ -102,7 +102,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-white">
       {/* Page Header pulling styles from existing central repository */}
-      <PageHeader title="Notes" />
+      <PageHeader title="Notes" backRoute="/student" />
 
       {/* Main Container handling the Horizontal layout of the Note Explorer Component Grid */}
       <main className="px-10 py-12">

@@ -173,7 +173,7 @@ export default function Page() {
       
       {errorMsg && <p className="text-red-500 font-bold">{errorMsg}</p>}
       <div>
-        <PageHeader title="Welcome , Staff" />
+        <PageHeader title="Welcome , Staff" backRoute="/staff" />
 
         <Form onSubmit={handleBookSubmit} className="max-w-2xl mt-8">
           <div className="grid grid-cols-1 gap-4">

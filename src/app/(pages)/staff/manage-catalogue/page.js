@@ -105,7 +105,7 @@ export default function ManageCataloguePage() {
   return (
     <>
       <Header />
-      <PageHeader title="Manage the Catalogue" />
+      <PageHeader title="Manage the Catalogue" backRoute="/staff" />
       
       {/* Black Subheader matching Wireframe */}
       <React.Suspense fallback={<div className="bg-[#000000] text-white p-2 text-sm italic">Loading search engine...</div>}>
