@@ -2,7 +2,7 @@
 import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import "react-quill-new/dist/quill.snow.css";
 import axios from "axios";
 
@@ -11,6 +11,7 @@ const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 export default function NoteEditorPage() {
   const { noteID } = useParams();
+  const router = useRouter();
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("Note Title");
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
@@ -109,7 +110,7 @@ export default function NoteEditorPage() {
           <span className="cursor-pointer hover:underline">View</span>
         </div>
         {/* Back/Return Arrow */}
-        <button className="text-white hover:text-gray-300">
+        <button onClick={() => router.push('/student/notes')} className="text-white hover:text-gray-300 transition-colors">
           <svg
             width="28"
             height="24"

@@ -92,7 +92,7 @@ export default function ReaderPage({ params }) {
       {/* Top Header */}
       <div className="flex flex-row items-center justify-between px-6 py-4 bg-[#2da1c2] text-white shadow-sm">
         <div className="flex flex-row items-center gap-4">
-          <button onClick={() => router.back()} className="text-white hover:text-gray-200 transition-colors">
+          <button onClick={() => router.push('/student/catalogue/discovery')} className="text-white hover:text-gray-200 transition-colors">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>

@@ -166,10 +166,9 @@ export async function handleAddFolder(currentUser, folderName, parentFolderId, s
       { withCredentials: true }
     );
 
-    // If backend returns the newly created DB item in the response
-    if (response.data.success) {
-      // Magically push the new db entry into the React Array without needing to refresh!
-      setFolders((prev) => [...prev, response.data.newFolder]);
+    // The backend returns the raw new Folder object directly
+    if (response.data && response.data.FolderID) {
+      setFolders((prev) => [...prev, response.data]);
     }
   } catch (error) {
     console.error("Failed to create folder:", error);
@@ -192,18 +191,16 @@ export async function handleAddNote(currentUser, noteName, parentFolderId, setFi
       {
         title: noteName,
         NoteTitle: noteName,
+        noteTitle: noteName,
         folderId: parentFolderId || null,
         parentID: parentFolderId || null
       },
       { withCredentials: true }
     );
 
-    if (response.data.success) {
-       setFiles((prev) => [...prev, response.data.newNote]);
-       
-       // Return the database generated ID to power the Next.js router redirection
-       // Assumes your backend returns an 'id' or 'note_id' field. Change this if your SQL key is radically different.
-       return response.data.newNote.id || response.data.NoteID || response.data.newNote.NoteID;
+    if (response.data && response.data.NoteID) {
+       setFiles((prev) => [...prev, response.data]);
+       return response.data.NoteID;
     }
     return null;
   } catch (error) {
