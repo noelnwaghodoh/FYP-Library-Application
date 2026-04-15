@@ -9,7 +9,7 @@ export function BookDisplay({ book }) {
   const bookThumbnailName = "thumb+" + parts[0];
 
   // Default fallbacks referencing your wireframe format
-  const year = book?.BookDate|| "YYYY";
+  const year = book?.BookDate.slice(0,10)|| "YYYY";
   const title = book?.BookTitle || "Book Title 1";
   const author = book?.BookAuthor || "Author";
   const description = book?.ItemDescription || "This is placeholder text for the synopsis of the book. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
