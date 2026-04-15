@@ -7,29 +7,27 @@ export default function PageHeader({ title, backRoute }) {
   const router = useRouter();
   
   return (
-    <header className="bg-[#2596BE] text-white p-1">
-      <div className="flex">
-        <div className="flex items-center gap-3">
+    <header className="bg-[#2596BE] text-white py-4 px-2 shadow-sm relative z-10">
+      <div className="flex items-center justify-between w-full">
+        {/* Left Side: Optional Back Arrow + Title */}
+        <div className="flex items-center gap-4">
           {backRoute && (
-            <button onClick={() => router.push(backRoute)} className="text-white hover:text-gray-200 transition-colors ml-4 mr-2">
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <button onClick={() => router.push(backRoute)} className="text-white hover:text-gray-200 transition-transform hover:-translate-x-1 ml-4 h-full flex items-center justify-center">
+               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12"></line>
                   <polyline points="12 19 5 12 12 5"></polyline>
                </svg>
             </button>
           )}
-          <div>
-            <h1 className="">&nbsp;</h1>
-            <h2 className={backRoute ? "" : "pl-4"}>{title}</h2>
-          </div>
+          <h2 className={`text-[20px] font-semibold tracking-wide leading-none select-none m-0 ${backRoute ? "ml-0" : "ml-4"}`}>
+            {title}
+          </h2>
         </div>
-        <div className="ml-auto flex items-end gap-6 pr-4 mb-2">
-          {/* Explicitly wrap Home to push it down to the text baseline of the title */}
-          <div className="text-[18px] font-medium tracking-wide hover:text-gray-200 transition-colors cursor-pointer select-none pb-[8px]">
+        
+        {/* Right Side: Home Routing Link */}
+        <div className="flex items-center pr-6 h-full">
+          <div className="text-[17px] font-medium tracking-wider hover:text-gray-200 transition-colors cursor-pointer select-none leading-none">
             <Home />
-          </div>
-          <div className="flex gap-2">
-         
           </div>
         </div>
       </div>
