@@ -2,7 +2,7 @@
 import { API_URL } from "@/config";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
-import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal } from "./note-util";
+import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal, RenameModal, handleDeleteFolder, handleDeleteNote, handleRenameFolder, handleRenameNote } from "./note-util";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -19,6 +19,47 @@ export default function Page() {
   
   // Modal tracking state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [renameTarget, setRenameTarget] = useState(null);
+  
+  // Context Menu State
+  const [contextMenu, setContextMenu] = useState(null);
+
+  useEffect(() => {
+    const handleGlobalClick = () => setContextMenu(null);
+    window.addEventListener("click", handleGlobalClick);
+    return () => window.removeEventListener("click", handleGlobalClick);
+  }, []);
+
+  const handleContextMenu = (e, item) => {
+    e.preventDefault();
+    setContextMenu({
+      mouseX: e.pageX,
+      mouseY: e.pageY,
+      item: item
+    });
+  };
+
+  const executeDelete = async () => {
+    if (!contextMenu) return;
+    const item = contextMenu.item;
+    const isFolder = item.type === 'folder';
+    const id = isFolder ? (item.id || item.folderID || item.folder_id || item.FolderID) : (item.id || item.noteID || item.note_id || item.NoteID);
+    
+    if (confirm(`Are you extremely sure you want to permanently delete this ${isFolder ? 'folder' : 'file'}?`)) {
+      if (isFolder) await handleDeleteFolder(currentUser, id, () => getRootFolders());
+      else await handleDeleteNote(currentUser, id, () => getRootFiles());
+    }
+  };
+
+  const executeRenameSubmit = async (newName) => {
+    if (!renameTarget) return;
+    const isFolder = renameTarget.type === 'folder';
+    const id = isFolder ? (renameTarget.id || renameTarget.folderID || renameTarget.folder_id || renameTarget.FolderID) : (renameTarget.id || renameTarget.noteID || renameTarget.note_id || renameTarget.NoteID);
+    
+    if (isFolder) await handleRenameFolder(currentUser, id, newName, () => getRootFolders());
+    else await handleRenameNote(currentUser, id, newName, () => getRootFiles());
+    setRenameTarget(null);
+  };
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,6 +165,7 @@ export default function Page() {
                   <FolderCard 
                     key={index} 
                     onClick={() => router.push(`/student/notes/folder/${folderId}`)}
+                    onContextMenu={(e) => handleContextMenu(e, item)}
                     label={item.FolderName || item.title || `Untitled Folder`} 
                     hasDocs={item.hasDocs || false} 
                   />
@@ -134,6 +176,7 @@ export default function Page() {
                 <FileCard 
                   key={index} 
                   onClick={() => router.push(`/student/notes/${noteId}`)} 
+                  onContextMenu={(e) => handleContextMenu(e, item)}
                   label={item.NoteTitle || item.name || `Untitled Note`} 
                 />
               );
@@ -166,7 +209,7 @@ export default function Page() {
                            const targetUrl = isFolder ? `/student/notes/folder/${id}` : `/student/notes/${id}`;
                            
                            return (
-                             <tr key={index} onDoubleClick={() => router.push(targetUrl)} title="Double-click to open" className="border-b hover:bg-blue-50 transition cursor-pointer">
+                             <tr key={index} onContextMenu={(e) => handleContextMenu(e, item)} onDoubleClick={() => router.push(targetUrl)} title="Double-click to open. Right-click for options." className="border-b hover:bg-blue-50 transition cursor-pointer">
                                <td className="py-4 px-6 flex justify-center">
                                   <Image src={isFolder ? "/images/folder.png" : "/images/file (1).png"} alt="icon" width={24} height={24} className="object-contain" />
                                </td>
@@ -212,6 +255,38 @@ export default function Page() {
         onClose={() => setIsModalOpen(false)} 
         onSubmit={handleModalSubmit} 
       />
+
+      {/* Rename Modal safely handles both files and folders using GenericModal */}
+      <RenameModal 
+        isOpen={renameTarget !== null}
+        onClose={() => setRenameTarget(null)}
+        onSubmit={executeRenameSubmit}
+        initialValue={renameTarget ? (renameTarget.type === 'folder' ? (renameTarget.FolderName || renameTarget.title) : (renameTarget.NoteTitle || renameTarget.name)) : ""}
+      />
+
+      {/* Floating Right-Click Context Menu */}
+      {contextMenu !== null && (
+        <div 
+          className="absolute z-[9999] bg-white border border-gray-200 shadow-xl rounded-md py-1 w-40 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+          style={{ top: contextMenu.mouseY, left: contextMenu.mouseX }}
+        >
+          <button 
+             className="px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#2ba5c7] flex items-center gap-2 transition-colors w-full"
+             onClick={() => setRenameTarget(contextMenu.item)}
+          >
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+             Rename
+          </button>
+          <div className="h-px bg-gray-100 my-1 w-full" />
+          <button 
+             className="px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors w-full"
+             onClick={executeDelete}
+          >
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+             Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 }

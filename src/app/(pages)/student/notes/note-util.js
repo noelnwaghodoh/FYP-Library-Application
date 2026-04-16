@@ -5,57 +5,62 @@ import Image from 'next/image';
 import axios from 'axios';
 
 // --- MODAL COMPONENTS ---
-export function CreateFolderModal({ isOpen, onClose, onSubmit }) {
-  const [folderName, setFolderName] = useState("");
+export function GenericModal({ isOpen, onClose, onSubmit, title, label, placeholder, submitText, initialValue = "" }) {
+  const [inputValue, setInputValue] = React.useState(initialValue);
+
+  // Update input carefully whenever it surfaces
+  React.useEffect(() => {
+    if (isOpen) setInputValue(initialValue);
+  }, [isOpen, initialValue]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (folderName.trim() === "") return;
-    onSubmit(folderName);
-    setFolderName(""); // Reset for next time
+    if (inputValue.trim() === "") return;
+    onSubmit(inputValue);
+    setInputValue("");
   };
 
   const handleCancel = () => {
-    setFolderName("");
+    setInputValue(initialValue);
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">Create New Folder</h3>
+    <div className="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Folder Name
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            {label}
           </label>
           <input
             type="text"
             autoFocus
-            value={folderName}
-            onChange={(e) => setFolderName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2ba5c7] focus:border-transparent transition-all"
-            placeholder="e.g. Physics 101"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2ba5c7] focus:border-transparent transition-all text-gray-800"
+            placeholder={placeholder}
           />
           
           <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={folderName.trim() === ""}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#2ba5c7] rounded-md hover:bg-[#228b9e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              disabled={inputValue.trim() === ""}
+              className="px-4 py-2 text-sm font-bold text-white bg-[#2ba5c7] rounded-md hover:bg-[#228b9e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
-              Create
+              {submitText}
             </button>
           </div>
         </form>
@@ -64,45 +69,72 @@ export function CreateFolderModal({ isOpen, onClose, onSubmit }) {
   );
 }
 
+export function CreateFolderModal({ isOpen, onClose, onSubmit }) {
+  return (
+    <GenericModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      onSubmit={onSubmit} 
+      title="Create New Folder"
+      label="Folder Name"
+      placeholder="e.g. Physics 101"
+      submitText="Create"
+    />
+  );
+}
+
+export function RenameModal({ isOpen, onClose, onSubmit, initialValue }) {
+  return (
+    <GenericModal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      onSubmit={onSubmit} 
+      title="Rename Item"
+      label="New Title"
+      placeholder="Type a new name..."
+      submitText="Save Changes"
+      initialValue={initialValue}
+    />
+  );
+}
+
 // --- CARD COMPONENTS ---
-export function FolderCard({ label, onClick }) {
-  // Truncate the name dynamically if it stretches past 20 characters
+export function FolderCard({ label, onClick, onContextMenu }) {
   const displayLabel = label && label.length > 20 
     ? label.substring(0, 20) + "..." 
     : label;
 
   return (
-    <div onClick={onClick} className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]">
+    <div onClick={onClick} onContextMenu={onContextMenu} className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]">
       <Image 
         src="/images/folder.png" 
         alt="Folder Icon"
         width={72} 
         height={72} 
-        className="object-contain"
+        className="object-contain drop-shadow-sm"
       />
-      <span className="text-[14px] font-normal text-gray-800 text-center" title={label}>
+      <span className="text-[14px] font-medium text-gray-800 text-center select-none" title={label}>
         {displayLabel}
       </span>
     </div>
   );
 }
 
-export function FileCard({ label, onClick }) {
-  // Truncate the name dynamically if it stretches past 20 characters
+export function FileCard({ label, onClick, onContextMenu }) {
   const displayLabel = label && label.length > 20 
     ? label.substring(0, 20) + "..." 
     : label;
 
   return (
-    <div onClick={onClick} className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]">
+    <div onClick={onClick} onContextMenu={onContextMenu} className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]">
       <Image 
         src="/images/file (1).png" 
         alt="File Icon"
         width={72} 
         height={72} 
-        className="object-contain"
+        className="object-contain drop-shadow-sm"
       />
-      <span className="text-[14px] font-normal text-gray-800 text-center" title={label}>
+      <span className="text-[14px] font-medium text-gray-800 text-center select-none" title={label}>
         {displayLabel}
       </span>
     </div>
@@ -214,5 +246,63 @@ export async function handleAddNote(currentUser, noteName, parentFolderId, setFi
       console.error("Failed to create note:", error);
     }
     return null;
+  }
+}
+
+export async function handleDeleteFolder(currentUser, folderId, onSuccess) {
+  if (!currentUser) return;
+  try {
+    await axios.delete(`${API_URL}/notes/folders/${folderId}`, { withCredentials: true });
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    console.error("Failed to delete folder:", error);
+  }
+}
+
+export async function handleDeleteNote(currentUser, noteId, onSuccess) {
+  if (!currentUser) return;
+  try {
+    await axios.delete(`${API_URL}/notes/${noteId}`, { withCredentials: true });
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    console.error("Failed to delete note:", error);
+  }
+}
+
+export async function handleRenameFolder(currentUser, folderId, newName, onSuccess) {
+  if (!currentUser) return;
+  try {
+    await axios.put(`${API_URL}/notes/folders/${folderId}`, { folderName: newName }, { withCredentials: true });
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    if (error.response && error.response.status === 409) alert(error.response.data.error);
+    else console.error("Failed to rename folder:", error);
+  }
+}
+
+export async function handleRenameNote(currentUser, noteId, newName, onSuccess) {
+  if (!currentUser) return;
+  try {
+    // Safely retrieve the existing node content first to avoid wiping out the actual note body
+    const noteResponse = await axios.get(`${API_URL}/notes/${noteId}`, { withCredentials: true });
+    
+    // Process JSON parse safely
+    let contentPayload = "";
+    if (noteResponse.data && noteResponse.data.length > 0) {
+       const raw = noteResponse.data[0].NotesContent;
+       if (raw && raw !== "null") {
+          try { contentPayload = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch(e) { contentPayload = raw; }
+       }
+    }
+
+    await axios.put(`${API_URL}/notes/${noteId}`, { 
+       title: newName, 
+       content: contentPayload 
+    }, { withCredentials: true });
+    
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    if (error.response && error.response.status === 409) alert(error.response.data.error);
+    else console.error("Failed to rename note:", error);
   }
 }
