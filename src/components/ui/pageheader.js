@@ -29,8 +29,13 @@ export default function PageHeader({ title, backRoute, onBackClick, children }) 
           <div className="flex items-center gap-3">
              {children}
           </div>
-          <div className="text-[17px] font-medium tracking-wider hover:text-gray-200 transition-colors cursor-pointer select-none leading-none">
-            <Home />
+          <div className="flex items-center gap-6">
+            <span onClick={() => router.push('/staff')} className="text-[15px] font-bold uppercase tracking-wider hover:text-gray-200 transition-colors cursor-pointer select-none opacity-90 hover:opacity-100">
+              STAFF
+            </span>
+            <div className="text-[17px] font-medium tracking-wider hover:text-gray-200 transition-colors cursor-pointer select-none leading-none">
+              <Home />
+            </div>
           </div>
         </div>
       </div>

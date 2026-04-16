@@ -77,7 +77,7 @@ export default function Page() {
       console.log("url is" + url);
       const successfulUpload = await uploadFile(file, url);
 
-      if (successfulUpload === true) {
+      if (successfulUpload === true && extension === ".pdf") {
         const tellServerofUpload = await tellServer(file.name);
       }
     }
