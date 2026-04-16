@@ -16,8 +16,9 @@ export function BookCard({ handleClick, ...book }) {
   const author = book.author || "Author";
   
   // Safely grab the filename by checking if it exists first
+  const isEpub = book.BookFileName?.toLowerCase().endsWith('.epub');
   const parts = book.BookFileName ? book.BookFileName.split(".") : ["default_thumbnail"];
-  const bookThumbnailName = "thumb+"+parts[0];
+  const bookThumbnailName = isEpub ? "book-cover-placeholder" : "thumb+" + parts[0];
 
   return (
     <div className="flex items-center gap-3 p-2 w-max transition-colors rounded-md hover:bg-gray-50 cursor-pointer" onClick={handleClick}>

@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 export function BookDisplay({ book }) {
   const router = useRouter();
   // Gracefully handle filename for the DigitalOcean URL
+  const isEpub = book?.BookFileName?.toLowerCase().endsWith('.epub');
   const parts = book?.BookFileName ? book.BookFileName.split(".") : ["default_thumbnail"];
-  const bookThumbnailName = "thumb+" + parts[0];
+  const bookThumbnailName = isEpub ? "book-cover-placeholder" : "thumb+" + parts[0];
 
   // Default fallbacks referencing your wireframe format
   const year = book?.BookDate.slice(0,10)|| "YYYY";
