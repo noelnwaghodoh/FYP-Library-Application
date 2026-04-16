@@ -6,11 +6,13 @@ import PageHeader from "@/components/ui/pageheader";
 import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal } from "../../note-util"; 
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
 
 export default function FolderPage() {
   const router = useRouter(); 
   const { folderID } = useParams(); // Unwrap dynamic route securely
   
+  const [viewMode, setViewMode] = useState("grid");
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -116,27 +118,27 @@ export default function FolderPage() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // Special handler resolving the explicit parent block seamlessly 
+  const handleGoToParent = () => {
+     router.back();
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Top UI Header logic - Include a slight visual cue we are in a subfolder */}
-      <PageHeader title="Folder Explorer" backRoute="/student/notes" />
+      <PageHeader title="Folder Explorer" onBackClick={handleGoToParent}>
+        <button onClick={() => setViewMode('grid')} title="Grid View" className={`p-1.5 rounded transition ${viewMode === 'grid' ? 'bg-white/20' : 'hover:bg-white/10'}`}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        </button>
+        <button onClick={() => setViewMode('table')} title="List View" className={`p-1.5 rounded transition ${viewMode === 'table' ? 'bg-white/20' : 'hover:bg-white/10'}`}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        </button>
+      </PageHeader>
 
       <main className="px-10 py-12">
-        <div className="flex flex-row gap-6 flex-wrap items-start max-w-4xl">
+        {viewMode === "grid" ? (
+          <div className="flex flex-row gap-6 flex-wrap items-start max-w-4xl">
           
-          {/* Back button strictly navigating to root */}
-          <div 
-             onClick={() => router.push('/student/notes')}
-             className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]"
-          >
-             <div className="w-[72px] h-[72px] bg-gray-100 rounded-md flex items-center justify-center border-[1.5px] border-gray-300">
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                 <path d="M19 12H5M12 19l-7-7 7-7"/>
-               </svg>
-             </div>
-             <span className="text-[14px] font-medium text-gray-600 text-center">Go Back</span>
-          </div>
-
           {currentItems.map((item, index) => {
             if (item.type === 'folder') {
               const subFolderId = item.id || item.folderID || item.folder_id || item.FolderID;
@@ -162,10 +164,46 @@ export default function FolderPage() {
             );
           })}
           
-          {/* Subfolder functionality inherits the folder routing context! */}
-          <AddFolderButton onClick={createFolder} />
-          <AddFileButton onClick={createAndNavigate} />
-        </div>
+          </div>
+        ) : (
+          <div className="w-full max-w-4xl">
+             <div className="w-full flex justify-end gap-3 mb-4">
+               <button onClick={createFolder} className="bg-[#2ba5c7] text-white px-4 py-2 rounded font-medium shadow-sm hover:opacity-90 transition">New Folder</button>
+               <button onClick={createAndNavigate} className="bg-[#5CB85C] text-white px-4 py-2 rounded font-medium shadow-sm hover:opacity-90 transition">New File</button>
+             </div>
+             <div className="bg-white rounded shadow-md overflow-hidden border border-gray-200">
+                <table className="w-full text-left border-collapse select-none">
+                  <thead>
+                     <tr className="bg-gray-100 text-gray-700 text-sm border-b-2 border-gray-300">
+                       <th className="py-4 px-6 font-bold w-16 text-center">Type</th>
+                       <th className="py-4 px-6 font-bold">Name</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                    {currentItems.length === 0 && (
+                       <tr><td colSpan="2" className="text-center py-8 text-gray-500 italic">This directory is empty.</td></tr>
+                    )}
+                    {currentItems.map((item, index) => {
+                        const isFolder = item.type === "folder";
+                        const id = isFolder ? (item.id || item.folderID || item.folder_id || item.FolderID) : (item.id || item.ID || item.noteID || item.NoteID || item.note_id || item.NotesID);
+                        const name = isFolder ? (item.name || item.title || `Folder ${index+1}`) : (item.title || item.name || item.NoteTitle || item.NotesContent || `File ${index+1}`);
+                        const targetUrl = isFolder ? `/student/notes/folder/${id}` : `/student/notes/${id}`;
+                        
+                        return (
+                          <tr key={index} onDoubleClick={() => router.push(targetUrl)} title="Double-click to open" className="border-b hover:bg-blue-50 transition cursor-pointer">
+                            <td className="py-4 px-6 flex justify-center">
+                               <Image src={isFolder ? "/images/folder.png" : "/images/file (1).png"} alt="icon" width={24} height={24} className="object-contain" />
+                            </td>
+                            <td className="py-4 px-6 text-gray-800 font-medium">{name}</td>
+                          </tr>
+                        );
+                    })}
+                  </tbody>
+                </table>
+             </div>
+             <div className="text-xs text-gray-400 mt-2 italic text-right w-full">Double-click any row to open the file or folder.</div>
+          </div>
+        )}
 
         {totalPages > 1 && (
           <div className="flex justify-start w-full mt-10 gap-3 max-w-4xl">

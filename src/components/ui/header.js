@@ -18,7 +18,7 @@ export default function Header(props) {
       </div>
 
       {/* Floating Timer exactly clamped into the center of the viewport header */}
-      {isTimerActive && !pathname?.startsWith("/staff") && (
+      {isTimerActive && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
           <span className="text-[17px] font-medium tracking-wide drop-shadow-sm">
             {timerMode === "WORK" && `Time Left before break (Session ${currentSession}/${totalSessions}): ${timeString}`}

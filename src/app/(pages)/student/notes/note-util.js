@@ -171,7 +171,11 @@ export async function handleAddFolder(currentUser, folderName, parentFolderId, s
       setFolders((prev) => [...prev, response.data]);
     }
   } catch (error) {
-    console.error("Failed to create folder:", error);
+    if (error.response && error.response.status === 409) {
+      alert(error.response.data.error);
+    } else {
+      console.error("Failed to create folder:", error);
+    }
   }
 }
 
@@ -204,7 +208,11 @@ export async function handleAddNote(currentUser, noteName, parentFolderId, setFi
     }
     return null;
   } catch (error) {
-    console.error("Failed to create note:", error);
+    if (error.response && error.response.status === 409) {
+      alert(error.response.data.error);
+    } else {
+      console.error("Failed to create note:", error);
+    }
     return null;
   }
 }

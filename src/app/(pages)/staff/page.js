@@ -1,14 +1,11 @@
 "use client";
 import PageHeader from "@/components/ui/pageheader";
-import Header from "@/components/ui/header";
 import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 
 export default function StaffDashboard() {
   return (
     <main className="min-h-screen bg-gray-50/30">
-      <Header>
-        <PageHeader title="Welcome," />
-      </Header>
+      <PageHeader title="Welcome," />
       
       <div className="flex flex-col md:flex-row items-center justify-center min-h-[65vh] gap-16 p-8">
         

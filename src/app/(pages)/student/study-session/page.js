@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import Header from "@/components/ui/header";
 import FrontPageButton from "@/components/ui/studentfrontpagebutton";
+import PageHeader from "@/components/ui/pageheader";
 import PomodoroModal from "./components/pomodoro-modal";
 
 export default function Page() {
@@ -9,30 +9,7 @@ export default function Page() {
 
   return (
     <>
-      <Header text={"Welcome"}>
-        <div className="flex">
-          <div>
-            <h1 className="">&nbsp;</h1>
-            <h2 className="">Begin a study session</h2>
-          </div>
-          <div className="ml-auto flex">
-            <FrontPageButton
-              imageSource="/images/add-user.png"
-              imageHeight={58}
-              imageWidth={58}
-              altText="add user button"
-              link="student"
-            />
-            <FrontPageButton
-              imageSource="/images/menu.png"
-              imageHeight={58}
-              imageWidth={58}
-              altText="options menu"
-              link="student"
-            />
-          </div>
-        </div>
-      </Header>
+      <PageHeader title="Begin a study session" backRoute="/student" />
 
       <div className=" flex flex-row min-h-screen justify-center items-center">
         {/* We explicitly strip the link routing mechanism out, dropping into pure interactive mode! */}

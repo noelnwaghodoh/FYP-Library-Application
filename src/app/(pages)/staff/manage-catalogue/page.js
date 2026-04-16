@@ -104,7 +104,6 @@ export default function ManageCataloguePage() {
 
   return (
     <>
-      <Header />
       <PageHeader title="Manage the Catalogue" backRoute="/staff" />
       
       {/* Black Subheader matching Wireframe */}

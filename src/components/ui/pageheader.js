@@ -3,7 +3,7 @@ import Header from "./header";
 import Home from "./home";
 import { useRouter } from "next/navigation";
 
-export default function PageHeader({ title, backRoute }) {
+export default function PageHeader({ title, backRoute, onBackClick, children }) {
   const router = useRouter();
   
   return (
@@ -11,8 +11,8 @@ export default function PageHeader({ title, backRoute }) {
       <div className="flex items-center justify-between w-full">
         {/* Left Side: Optional Back Arrow + Title */}
         <div className="flex items-center gap-4">
-          {backRoute && (
-            <button onClick={() => router.push(backRoute)} className="text-white hover:text-gray-200 transition-transform hover:-translate-x-1 ml-4 h-full flex items-center justify-center">
+          {(backRoute || onBackClick) && (
+            <button onClick={onBackClick ? onBackClick : () => router.push(backRoute)} className="text-white hover:text-gray-200 transition-transform hover:-translate-x-1 ml-4 h-full flex items-center justify-center">
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12"></line>
                   <polyline points="12 19 5 12 12 5"></polyline>
@@ -24,8 +24,11 @@ export default function PageHeader({ title, backRoute }) {
           </h2>
         </div>
         
-        {/* Right Side: Home Routing Link */}
-        <div className="flex items-center pr-6 h-full">
+        {/* Right Side: Optional Toggles + Home Routing Link */}
+        <div className="flex items-center gap-8 pr-6 h-full">
+          <div className="flex items-center gap-3">
+             {children}
+          </div>
           <div className="text-[17px] font-medium tracking-wider hover:text-gray-200 transition-colors cursor-pointer select-none leading-none">
             <Home />
           </div>

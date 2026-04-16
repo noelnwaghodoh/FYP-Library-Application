@@ -1,6 +1,5 @@
 "use client";
 import { SignInForm } from "@/auth/components/sign-in-form";
-import Header from "@/components/ui/header";
 import Image from "next/image";
 
 
@@ -8,7 +7,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f3f4f6] flex flex-col font-sans">
-      <Header>
+      <header className="bg-[#2596BE] text-white p-2 relative shadow-sm z-50 w-full">
         <div className="flex flex-row items-center gap-5">
            <Image
              src="/images/ku_logo.png"
@@ -21,7 +20,7 @@ export default function Home() {
              Welcome to the Library App
            </h1>
         </div>
-      </Header>
+      </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center -mt-24">
