@@ -98,43 +98,82 @@ export function RenameModal({ isOpen, onClose, onSubmit, initialValue }) {
   );
 }
 
+export function ConfirmModal({ isOpen, onClose, onConfirm, title, message }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+        </div>
+        <div className="p-6">
+          <p className="text-gray-700 text-sm font-medium">{message}</p>
+          <div className="mt-6 flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
+              Cancel
+            </button>
+            <button type="button" onClick={onConfirm} className="px-4 py-2 text-sm font-bold text-white bg-[#2ba5c7] rounded-md hover:bg-[#228b9e] transition-colors shadow-sm">
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // --- CARD COMPONENTS ---
-export function FolderCard({ label, onClick, onContextMenu }) {
+export function FolderCard({ label, onClick, onContextMenu, draggable, onDragStart, onDragOver, onDragLeave, onDrop }) {
   const displayLabel = label && label.length > 20 
     ? label.substring(0, 20) + "..." 
     : label;
 
   return (
-    <div onClick={onClick} onContextMenu={onContextMenu} className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]">
+    <div 
+      onClick={onClick} 
+      onContextMenu={onContextMenu} 
+      draggable={draggable}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      className={`flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]`}
+    >
       <Image 
         src="/images/folder.png" 
         alt="Folder Icon"
         width={72} 
         height={72} 
-        className="object-contain drop-shadow-sm"
+        className="object-contain drop-shadow-sm pointer-events-none"
       />
-      <span className="text-[14px] font-medium text-gray-800 text-center select-none" title={label}>
+      <span className="text-[14px] font-medium text-gray-800 text-center select-none pointer-events-none" title={label}>
         {displayLabel}
       </span>
     </div>
   );
 }
 
-export function FileCard({ label, onClick, onContextMenu }) {
+export function FileCard({ label, onClick, onContextMenu, draggable, onDragStart }) {
   const displayLabel = label && label.length > 20 
     ? label.substring(0, 20) + "..." 
     : label;
 
   return (
-    <div onClick={onClick} onContextMenu={onContextMenu} className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]">
+    <div 
+      onClick={onClick} 
+      onContextMenu={onContextMenu} 
+      draggable={draggable}
+      onDragStart={onDragStart}
+      className="flex flex-col items-center gap-2 cursor-pointer hover:-translate-y-1 transition-transform w-[90px]"
+    >
       <Image 
         src="/images/file (1).png" 
         alt="File Icon"
         width={72} 
         height={72} 
-        className="object-contain drop-shadow-sm"
+        className="object-contain drop-shadow-sm pointer-events-none"
       />
-      <span className="text-[14px] font-medium text-gray-800 text-center select-none" title={label}>
+      <span className="text-[14px] font-medium text-gray-800 text-center select-none pointer-events-none" title={label}>
         {displayLabel}
       </span>
     </div>
@@ -304,5 +343,27 @@ export async function handleRenameNote(currentUser, noteId, newName, onSuccess) 
   } catch (error) {
     if (error.response && error.response.status === 409) alert(error.response.data.error);
     else console.error("Failed to rename note:", error);
+  }
+}
+
+export async function handleMoveFolder(currentUser, folderId, newParentId, onSuccess) {
+  if (!currentUser) return;
+  try {
+    await axios.put(`${API_URL}/notes/folders/${folderId}/move`, { parentId: newParentId }, { withCredentials: true });
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    if (error.response && (error.response.status === 409 || error.response.status === 400)) alert(error.response.data.error);
+    else console.error("Failed to move folder:", error);
+  }
+}
+
+export async function handleMoveNote(currentUser, noteId, newFolderId, onSuccess) {
+  if (!currentUser) return;
+  try {
+    await axios.put(`${API_URL}/notes/${noteId}/move`, { folderId: newFolderId }, { withCredentials: true });
+    if (onSuccess) onSuccess();
+  } catch (error) {
+    if (error.response && error.response.status === 409) alert(error.response.data.error);
+    else console.error("Failed to move note:", error);
   }
 }

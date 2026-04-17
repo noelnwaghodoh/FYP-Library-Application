@@ -3,7 +3,7 @@ import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 import PageHeader from "@/components/ui/pageheader";
 // Since we are inside /folder/[folderID], utils are two directories up!
-import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal } from "../../note-util"; 
+import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal, ConfirmModal, handleMoveFolder, handleMoveNote } from "../../note-util"; 
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
@@ -19,6 +19,53 @@ export default function FolderPage() {
   
   // Modal tracking state
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Drag and Drop State
+  const [pendingMove, setPendingMove] = useState(null);
+
+  const handleDragStart = (e, item) => {
+     e.dataTransfer.setData("application/json", JSON.stringify(item));
+  };
+  
+  const handleDragOver = (e) => {
+     e.preventDefault(); 
+  };
+  
+  const handleDrop = (e, targetFolder) => {
+     e.preventDefault();
+     try {
+       const draggedItem = JSON.parse(e.dataTransfer.getData("application/json"));
+       const sourceId = draggedItem.id || draggedItem.folderID || draggedItem.folder_id || draggedItem.FolderID || draggedItem.noteID || draggedItem.note_id || draggedItem.NoteID;
+       const targetId = targetFolder.id || targetFolder.folderID || targetFolder.folder_id || targetFolder.FolderID;
+       
+       if (draggedItem.type === 'folder' && sourceId === targetId) return;
+
+       setPendingMove({ source: draggedItem, target: targetFolder });
+     } catch (err) {
+       console.error("Drag data parse error", err);
+     }
+  };
+
+  const executeMove = async () => {
+      if (!pendingMove) return;
+      const { source, target } = pendingMove;
+      
+      const sourceId = source.id || source.folderID || source.folder_id || source.FolderID || source.noteID || source.note_id || source.NoteID;
+      const targetId = target.id || target.folderID || target.folder_id || target.FolderID;
+      
+      if (source.type === 'folder') {
+          await handleMoveFolder(currentUser, sourceId, targetId, () => {
+             getFolderContents();
+             getNestedFiles();
+          });
+      } else {
+          await handleMoveNote(currentUser, sourceId, targetId, () => {
+             getFolderContents();
+             getNestedFiles();
+          });
+      }
+      setPendingMove(null);
+  };
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -145,6 +192,10 @@ export default function FolderPage() {
               return (
                 <FolderCard 
                   key={index} 
+                  draggable={true}
+                  onDragStart={(e) => handleDragStart(e, item)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, item)}
                   onClick={() => router.push(`/student/notes/folder/${subFolderId}`)}
                   label={item.name || item.title || `Folder ${index+1}`} 
                   hasDocs={item.hasDocs || false} 
@@ -158,6 +209,8 @@ export default function FolderPage() {
             return (
               <FileCard 
                 key={index} 
+                draggable={true}
+                onDragStart={(e) => handleDragStart(e, item)}
                 onClick={() => router.push(`/student/notes/${noteId}`)} 
                 label={item.title || item.name || item.NoteTitle || item.NotesContent || `File ${index+1}`} 
               />
@@ -190,11 +243,20 @@ export default function FolderPage() {
                         const targetUrl = isFolder ? `/student/notes/folder/${id}` : `/student/notes/${id}`;
                         
                         return (
-                          <tr key={index} onDoubleClick={() => router.push(targetUrl)} title="Double-click to open" className="border-b hover:bg-blue-50 transition cursor-pointer">
+                          <tr 
+                            key={index} 
+                            draggable={true}
+                            onDragStart={(e) => handleDragStart(e, item)}
+                            onDragOver={isFolder ? handleDragOver : undefined}
+                            onDrop={isFolder ? (e) => handleDrop(e, item) : undefined}
+                            onDoubleClick={() => router.push(targetUrl)} 
+                            title="Double-click to open. Drag item over a folder to move it." 
+                            className="border-b hover:bg-blue-50 transition cursor-pointer"
+                          >
                             <td className="py-4 px-6 flex justify-center">
-                               <Image src={isFolder ? "/images/folder.png" : "/images/file (1).png"} alt="icon" width={24} height={24} className="object-contain" />
+                               <Image src={isFolder ? "/images/folder.png" : "/images/file (1).png"} alt="icon" width={24} height={24} className="object-contain pointer-events-none" />
                             </td>
-                            <td className="py-4 px-6 text-gray-800 font-medium">{name}</td>
+                            <td className="py-4 px-6 text-gray-800 font-medium pointer-events-none">{name}</td>
                           </tr>
                         );
                     })}
@@ -233,6 +295,15 @@ export default function FolderPage() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSubmit={handleModalSubmit} 
+      />
+
+      {/* HTML5 Drag Confirm Modal overlay */}
+      <ConfirmModal 
+         isOpen={pendingMove !== null}
+         onClose={() => setPendingMove(null)}
+         onConfirm={executeMove}
+         title="Confirm Move"
+         message={`Are you sure you want to logically move "${pendingMove?.source?.name || pendingMove?.source?.title || pendingMove?.source?.FolderName || pendingMove?.source?.NoteTitle || 'this item'}" into "${pendingMove?.target?.name || pendingMove?.target?.title || pendingMove?.target?.FolderName}"?`}
       />
     </div>
   );
