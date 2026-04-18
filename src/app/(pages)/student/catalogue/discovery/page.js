@@ -9,6 +9,17 @@ import CatalogueSearchBar from "@/components/ui/search";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import SearchResults from "../components/search-results";
+"use client";import { API_URL } from "@/config";
+
+import Header from "@/components/ui/header";
+import PageHeader from "@/components/ui/pageheader";
+import SearchForm from "@/components/ui/search";
+import React, { useEffect, useState } from "react";
+import FrontPageButton from "@/components/ui/studentfrontpagebutton";
+import CatalogueSearchBar from "@/components/ui/search";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import SearchResults from "../components/search-results";
 import { SuggestedReading } from "../components/suggested-reading";
 import { BookDisplay } from "../components/book-display";
 
@@ -17,6 +28,7 @@ function DiscoveryContent() {
 
   const [searchResultList, setSearchResultList] = useState([]);
   const [books, setBooks] = useState([]);
+  const [searchMeta, setSearchMeta] = useState({});
   const [displayBook, setDisplayBook] = useState(null);
   const searchParams = useSearchParams();
 
@@ -35,11 +47,21 @@ function DiscoveryContent() {
     params.append("searchText", term);
     const response = await fetch(`${API_URL}/catalogue?${params}`);
     const data = await response.json();
-    console.log("data is " + data);
-    setBooks(data);
-    setDisplayBook(null);
+    
+    // Defensively handle BOTH the old Array mapping and the new Object mapping seamlessly!
+    if (Array.isArray(data)) {
+        setBooks(data);
+        setSearchMeta({});
+    } else {
+        setBooks(data.results || data.books || []);
+        setSearchMeta({
+            isFallback: data.isFallback,
+            isRelated: data.isRelated,
+            exactMatch: data.exactMatch
+        });
+    }
 
-    console.log("the search says yes");
+    setDisplayBook(null);
 
     return data;
   }
@@ -65,7 +87,7 @@ function DiscoveryContent() {
         {displayBook ? (
           <BookDisplay book={displayBook} />
         ) : books && books.length > 0 ? (
-          <SearchResults books={books} onBookSelect={(book) => setDisplayBook(book)} />
+          <SearchResults books={books} meta={searchMeta} onBookSelect={(book) => setDisplayBook(book)} />
         ) : (
           <SuggestedReading message={message} />
         )}
