@@ -1,21 +1,7 @@
-"use client";import { API_URL } from "@/config";
-
-import Header from "@/components/ui/header";
-import PageHeader from "@/components/ui/pageheader";
-import SearchForm from "@/components/ui/search";
+"use client";
+import { API_URL } from "@/config";
 import React, { useEffect, useState } from "react";
-import FrontPageButton from "@/components/ui/studentfrontpagebutton";
-import CatalogueSearchBar from "@/components/ui/search";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import SearchResults from "../components/search-results";
-"use client";import { API_URL } from "@/config";
-
-import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
-import SearchForm from "@/components/ui/search";
-import React, { useEffect, useState } from "react";
-import FrontPageButton from "@/components/ui/studentfrontpagebutton";
 import CatalogueSearchBar from "@/components/ui/search";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
