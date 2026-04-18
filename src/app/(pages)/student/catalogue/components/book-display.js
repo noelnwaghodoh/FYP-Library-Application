@@ -17,12 +17,15 @@ export function BookDisplay({ book }) {
       imgSrc = `https://covers.openlibrary.org/b/isbn/${book.BookIdentifier}-M.jpg`;
   }
 
-  // Default fallbacks referencing your wireframe format
-  const year = book?.BookDate.slice(0,10)|| "YYYY";
-  const title = book?.BookTitle || "Book Title 1";
-  const author = book?.BookAuthor || "Author";
-  const description = book?.ItemDescription || "This is placeholder text for the synopsis of the book. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
-  const location = book?.Location || "This is a placeholder location";
+  // Safely extract metadata from either local DB column names or OpenLibrary API structure
+  const yearRaw = book?.BookDate ? String(book.BookDate).slice(0, 10) : (book?.releaseDate || book?.BookYear || null);
+  const title = book?.BookTitle || book?.title;
+  const author = book?.BookAuthor || book?.author;
+  const description = book?.ItemDescription || book?.description;
+  const location = book?.Location;
+  
+  // A book can ONLY be read digitally if it physically possesses a binary file!
+  const hasDigitalCopy = !!book?.BookFileName;
 
     function handleReadClick() {
       const fileName = book?.BookFileName || "";
@@ -69,7 +72,7 @@ export function BookDisplay({ book }) {
                 src={imgSrc}
                 width={120}
                 height={120}
-                alt={title}
+                alt={title || "Book Cover"}
                 unoptimized={true}
                 className="object-contain max-h-full max-w-full"
              />
@@ -77,29 +80,49 @@ export function BookDisplay({ book }) {
 
           {/* Title and Details block */}
           <div className="flex flex-col justify-center py-1">
-            <h1 className="text-[22px] font-medium text-gray-900 tracking-tight leading-tight">
-              {title}
-            </h1>
-            <p className="text-[14px] text-gray-800 mt-1.5">
-              {author}, {year}
-            </p>
-            <p className="text-[14px] text-gray-800 mt-[2px]">
-              <span className="text-[#a1e582] font-medium mr-1 tracking-wide">Available at</span> 
-              {location}
-            </p>
-            <button onClick={handleReadClick} className="mt-3.5 bg-[#2da1c2] hover:bg-[#258aa8] text-white py-[6px] px-4 rounded-md text-[14px] font-medium shadow-sm w-max transition-colors">
-              Read Online
+            {title && (
+              <h1 className="text-[22px] font-medium text-gray-900 tracking-tight leading-tight">
+                {title}
+              </h1>
+            )}
+            
+            {(author || yearRaw) && (
+              <p className="text-[14px] text-gray-800 mt-1.5">
+                {author}{author && yearRaw ? ", " : ""}{yearRaw}
+              </p>
+            )}
+            
+            {location && (
+              <p className="text-[14px] text-gray-800 mt-[2px]">
+                <span className="text-[#a1e582] font-medium mr-1 tracking-wide">Available at</span> 
+                {location}
+              </p>
+            )}
+            
+            {/* Always display the button, but natively disable it with greyed-out CSS if the file doesn't exist */}
+            <button 
+              onClick={hasDigitalCopy ? handleReadClick : undefined} 
+              disabled={!hasDigitalCopy}
+              className={`mt-3.5 text-white py-[6px] px-4 rounded-md text-[14px] font-medium shadow-sm w-max transition-colors ${
+                hasDigitalCopy 
+                  ? "bg-[#2da1c2] hover:bg-[#258aa8]" 
+                  : "bg-gray-400 cursor-not-allowed opacity-80"
+              }`}
+            >
+              {hasDigitalCopy ? "Read Online" : "Not Available Digitally"}
             </button>
           </div>
 
         </div>
 
         {/* Synopsis Paragraph */}
-        <div className="mt-6 w-full max-w-[500px]">
-          <p className="text-[15px] text-gray-900 leading-[1.6]">
-            {description}
-          </p>
-        </div>
+        {description && (
+          <div className="mt-6 w-full max-w-[500px]">
+            <p className="text-[15px] text-gray-900 leading-[1.6]">
+              {description}
+            </p>
+          </div>
+        )}
 
       </div>
     </div>
