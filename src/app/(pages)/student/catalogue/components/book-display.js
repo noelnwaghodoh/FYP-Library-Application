@@ -4,10 +4,18 @@ import { useRouter } from "next/navigation";
 
 export function BookDisplay({ book }) {
   const router = useRouter();
-  // Gracefully handle filename for the DigitalOcean URL
-  const isEpub = book?.BookFileName?.toLowerCase().endsWith('.epub');
-  const parts = book?.BookFileName ? book.BookFileName.split(".") : ["default_thumbnail"];
-  const bookThumbnailName = isEpub ? "book-cover-placeholder" : "thumb+" + parts[0];
+  // Gracefully handle filename for the DigitalOcean URL vs OpenLibrary CDN
+  let imgSrc = "https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/book-cover-placeholder.jpg";
+  
+  if (book?.BookFileName) {
+      const isEpub = book.BookFileName.toLowerCase().endsWith('.epub');
+      const parts = book.BookFileName.split(".");
+      const bookThumbnailName = isEpub ? "book-cover-placeholder" : "thumb+" + parts[0];
+      imgSrc = `https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/${bookThumbnailName}.jpg`;
+  } else if (book?.BookIdentifier) {
+      // Utilize the Medium resolution (-M) for the larger 120x120 display layout!
+      imgSrc = `https://covers.openlibrary.org/b/isbn/${book.BookIdentifier}-M.jpg`;
+  }
 
   // Default fallbacks referencing your wireframe format
   const year = book?.BookDate.slice(0,10)|| "YYYY";
@@ -58,7 +66,7 @@ export function BookDisplay({ book }) {
           {/* Thumbnail Box */}
           <div className="flex justify-center items-center w-[120px] h-[120px] border-[1.5px]  rounded-md bg-white flex-shrink-0 p-2">
              <Image
-                src={`https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/${bookThumbnailName}.jpg`}
+                src={imgSrc}
                 width={120}
                 height={120}
                 alt={title}

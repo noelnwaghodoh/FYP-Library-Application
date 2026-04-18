@@ -166,7 +166,7 @@ export default function NoteEditorPage() {
             value={content}
             onChange={setContent}
             modules={modules}
-            placeholder="Lorem Ipsum is simply dummy text..."
+            placeholder="Start Typing Here..."
           />
         </div>
 

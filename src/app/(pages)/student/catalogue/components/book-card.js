@@ -16,16 +16,24 @@ export function BookCard({ handleClick, ...book }) {
   const author = book.author || "Author";
   
   // Safely grab the filename by checking if it exists first
-  const isEpub = book.BookFileName?.toLowerCase().endsWith('.epub');
-  const parts = book.BookFileName ? book.BookFileName.split(".") : ["default_thumbnail"];
-  const bookThumbnailName = isEpub ? "book-cover-placeholder" : "thumb+" + parts[0];
+  let imgSrc = "https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/book-cover-placeholder.jpg";
+  
+  if (book.BookFileName) {
+      const isEpub = book.BookFileName.toLowerCase().endsWith('.epub');
+      const parts = book.BookFileName.split(".");
+      const bookThumbnailName = isEpub ? "book-cover-placeholder" : "thumb+" + parts[0];
+      imgSrc = `https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/${bookThumbnailName}.jpg`;
+  } else if (book.BookIdentifier) {
+      // If it exists in the DB heavily without a file, check OpenLibrary CDN (Small 32px resolution)
+      imgSrc = `https://covers.openlibrary.org/b/isbn/${book.BookIdentifier}-S.jpg`;
+  }
 
   return (
     <div className="flex items-center gap-3 p-2 w-max transition-colors rounded-md hover:bg-gray-50 cursor-pointer" onClick={handleClick}>
           <div className="flex-shrink-0">
         
        <Image
-       src={`https://fyp-assets.lon1.cdn.digitaloceanspaces.com/thumbnails/${bookThumbnailName}.jpg`}
+       src={imgSrc}
        width={32}
        height={40}
        alt={book.BookTitle || "Book Cover"}
