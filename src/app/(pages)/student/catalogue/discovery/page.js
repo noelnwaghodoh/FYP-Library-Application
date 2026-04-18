@@ -66,6 +66,23 @@ function DiscoveryContent() {
     return data;
   }
 
+  async function handleCourseSelect(courseId) {
+    if (!courseId) return;
+    try {
+      const response = await fetch(`${API_URL}/courses/${courseId}/books`);
+      const data = await response.json();
+      
+      // Defensively parse purely array-based responses from typical basic SQL fetches
+      setBooks(data.results || data.books || (Array.isArray(data) ? data : []));
+      setSearchMeta({
+          isCourseRecommended: true
+      });
+      setDisplayBook(null);
+    } catch (error) {
+       console.error("Failed to fetch course books", error);
+    }
+  }
+
   console.log(
     "from the parent searchQuery in use state is : " +
       JSON.stringify(searchQuery),
@@ -89,7 +106,7 @@ function DiscoveryContent() {
         ) : books && books.length > 0 ? (
           <SearchResults books={books} meta={searchMeta} onBookSelect={(book) => setDisplayBook(book)} />
         ) : (
-          <SuggestedReading message={message} />
+          <SuggestedReading message={message} onCourseSelect={handleCourseSelect} />
         )}
       </main>
     </>
