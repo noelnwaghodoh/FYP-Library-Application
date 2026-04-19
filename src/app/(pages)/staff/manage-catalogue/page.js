@@ -163,7 +163,7 @@ export default function ManageCataloguePage() {
          onClose={() => setIsDeleteModalOpen(false)}
          onConfirm={executeDeleteRecord}
          title="Confirm Permanent Deletion"
-         message={`WARNING: Executing this action will permanently delete "${bookToDelete?.BookTitle || bookToDelete?.title || "Unknown Title"}" and completely destroy its associated physical PDF from the AWS S3 Bucket. This action cannot be reversed.`}
+         message={`WARNING: Executing this action will permanently delete "${bookToDelete?.BookTitle || bookToDelete?.title || "Unknown Title"}" and completely destroy its associated physical PDF from the Cloud Storage. This action cannot be reversed.`}
          confirmText="Confirm Deletion"
          isDanger={true}
       />

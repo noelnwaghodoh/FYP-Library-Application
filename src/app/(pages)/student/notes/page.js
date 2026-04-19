@@ -347,7 +347,7 @@ export default function Page() {
          onClose={() => setPendingMove(null)}
          onConfirm={executeMove}
          title="Confirm Move"
-         message={`Are you sure you want to logically move "${pendingMove?.source?.name || pendingMove?.source?.title || pendingMove?.source?.FolderName || pendingMove?.source?.NoteTitle || 'this item'}" into "${pendingMove?.target?.name || pendingMove?.target?.title || pendingMove?.target?.FolderName}"?`}
+         message={`Are you sure you want to move "${pendingMove?.source?.name || pendingMove?.source?.title || pendingMove?.source?.FolderName || pendingMove?.source?.NoteTitle || 'this item'}" into "${pendingMove?.target?.name || pendingMove?.target?.title || pendingMove?.target?.FolderName}"?`}
       />
 
       {/* Floating Right-Click Context Menu */}
