@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { BookCard } from './book-card';
 
-export default function SearchResults({ books = [], meta = {}, itemsPerPage = 5, onBookSelect }) {
+export default function SearchResults({ books = [], meta = {}, itemsPerPage = 12, onBookSelect }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Ensure books is an array
@@ -56,8 +56,8 @@ export default function SearchResults({ books = [], meta = {}, itemsPerPage = 5,
         </div>
       )}
 
-      {/* List of books */}
-      <div className="flex flex-col space-y-1">
+      {/* Grid of Books */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 w-full pb-4">
         {currentBooks.map((book, index) => (
           // We spread the book object so BookCard receives the properties correctly
           <BookCard 

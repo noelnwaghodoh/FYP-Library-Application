@@ -38,8 +38,8 @@ export function SuggestedReading({ message, onCourseSelect }) {
                     <option value="">{isLoading ? "Loading courses..." : "— Select a Course —"}</option>
                     {courses.map((course) => (
                         <option 
-                            key={course.CourseID || course.id} 
-                            value={course.CourseID || course.id}
+                            key={course.courseid || course.CourseID || course.id} 
+                            value={course.courseid || course.CourseID || course.id}
                         >
                             {course.CourseName || course.coursename || "Unnamed Course"}
                         </option>
