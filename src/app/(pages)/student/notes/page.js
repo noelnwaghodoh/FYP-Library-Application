@@ -2,7 +2,8 @@
 import { API_URL } from "@/config";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
-import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal, RenameModal, ConfirmModal, handleDeleteFolder, handleDeleteNote, handleRenameFolder, handleRenameNote, handleMoveFolder, handleMoveNote } from "./note-util";
+import { FolderCard, FileCard, AddFolderButton, AddFileButton, handleAddNote, handleAddFolder, CreateFolderModal, RenameModal, handleDeleteFolder, handleDeleteNote, handleRenameFolder, handleRenameNote, handleMoveFolder, handleMoveNote } from "./note-util";
+import { ConfirmModal } from "@/components/ui/modal";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -20,6 +21,10 @@ export default function Page() {
   // Modal tracking state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [alertTarget, setAlertTarget] = useState(null);
+  
+  const handleError = (msg) => setAlertTarget(msg);
   
   // Context Menu State
   const [contextMenu, setContextMenu] = useState(null);
@@ -65,12 +70,12 @@ export default function Page() {
           await handleMoveFolder(currentUser, sourceId, targetId, () => {
              getRootFolders();
              getRootFiles();
-          });
+          }, handleError);
       } else {
           await handleMoveNote(currentUser, sourceId, targetId, () => {
              getRootFolders();
              getRootFiles();
-          });
+          }, handleError);
       }
       setPendingMove(null);
   };
@@ -90,16 +95,21 @@ export default function Page() {
     });
   };
 
-  const executeDelete = async () => {
+  const triggerDelete = () => {
     if (!contextMenu) return;
-    const item = contextMenu.item;
-    const isFolder = item.type === 'folder';
-    const id = isFolder ? (item.id || item.folderID || item.folder_id || item.FolderID) : (item.id || item.noteID || item.note_id || item.NoteID);
+    setDeleteTarget(contextMenu.item);
+    setContextMenu(null);
+  };
+
+  const executeDelete = async () => {
+    if (!deleteTarget) return;
+    const isFolder = deleteTarget.type === 'folder';
+    const id = isFolder ? (deleteTarget.id || deleteTarget.folderID || deleteTarget.folder_id || deleteTarget.FolderID) : (deleteTarget.id || deleteTarget.noteID || deleteTarget.note_id || deleteTarget.NoteID);
     
-    if (confirm(`Are you extremely sure you want to permanently delete this ${isFolder ? 'folder' : 'file'}?`)) {
-      if (isFolder) await handleDeleteFolder(currentUser, id, () => getRootFolders());
-      else await handleDeleteNote(currentUser, id, () => getRootFiles());
-    }
+    if (isFolder) await handleDeleteFolder(currentUser, id, () => getRootFolders(), handleError);
+    else await handleDeleteNote(currentUser, id, () => getRootFiles(), handleError);
+    
+    setDeleteTarget(null);
   };
 
   const executeRenameSubmit = async (newName) => {
@@ -107,8 +117,8 @@ export default function Page() {
     const isFolder = renameTarget.type === 'folder';
     const id = isFolder ? (renameTarget.id || renameTarget.folderID || renameTarget.folder_id || renameTarget.FolderID) : (renameTarget.id || renameTarget.noteID || renameTarget.note_id || renameTarget.NoteID);
     
-    if (isFolder) await handleRenameFolder(currentUser, id, newName, () => getRootFolders());
-    else await handleRenameNote(currentUser, id, newName, () => getRootFiles());
+    if (isFolder) await handleRenameFolder(currentUser, id, newName, () => getRootFolders(), handleError);
+    else await handleRenameNote(currentUser, id, newName, () => getRootFiles(), handleError);
     setRenameTarget(null);
   };
   
@@ -123,14 +133,14 @@ export default function Page() {
   
   // Actually commits the data to the MySQL Database once the user clicks "Create"
   const handleModalSubmit = async (folderName) => {
-    await handleAddFolder(currentUser, folderName, null, setFolders);
+    await handleAddFolder(currentUser, folderName, null, setFolders, handleError);
     setIsModalOpen(false);
   };
 
   // Wrapper function cleanly executing note generation BEFORE redirecting natively
   const createAndNavigate = async () => {
     // We explicitly supply "untitled" as the default base name here!
-    const newNoteId = await handleAddNote(currentUser, "untitled", null, setFiles);
+    const newNoteId = await handleAddNote(currentUser, "untitled", null, setFiles, handleError);
     
     if (newNoteId) {
       // Transition strictly to the rich text editor page holding that exact ID
@@ -356,13 +366,35 @@ export default function Page() {
           <div className="h-px bg-gray-100 my-1 w-full" />
           <button 
              className="px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors w-full"
-             onClick={executeDelete}
+             onClick={triggerDelete}
           >
              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
              Delete
           </button>
         </div>
       )}
+
+      {/* Tailwind Fixed Delete Modal overlay */}
+      <ConfirmModal 
+         isOpen={deleteTarget !== null}
+         onClose={() => setDeleteTarget(null)}
+         onConfirm={executeDelete}
+         title="Confirm Permanent Deletion"
+         message={`Are you extremely sure you want to permanently delete this ${deleteTarget?.type === 'folder' ? 'folder' : 'file'}?`}
+         isDanger={true}
+         confirmText="Delete"
+      />
+
+      {/* Global Application Notification Handler */}
+      <ConfirmModal 
+         isOpen={alertTarget !== null}
+         onClose={() => setAlertTarget(null)}
+         onConfirm={() => setAlertTarget(null)}
+         title="Notification"
+         message={alertTarget}
+         showCancel={false}
+         confirmText="Dismiss"
+      />
     </div>
   );
 }

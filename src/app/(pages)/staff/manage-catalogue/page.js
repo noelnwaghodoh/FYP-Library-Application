@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Header from "@/components/ui/header";
 import PageHeader from "@/components/ui/pageheader";
 import CatalogueSearchBar from "@/components/ui/search";
+import { BaseModal, ConfirmModal } from "@/components/ui/modal";
 import axios from "axios";
 
 export default function ManageCataloguePage() {
@@ -156,35 +157,20 @@ export default function ManageCataloguePage() {
         </div>
       </main>
 
-      {/* Tailwind Fixed Delete Modal overlay */}
-      {isDeleteModalOpen && bookToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-[0.65] flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded shadow-2xl max-w-lg w-full transform transition-all text-center">
-            <h3 className="text-2xl font-bold text-red-600 mb-2">Confirm Permanent Deletion</h3>
-            <p className="text-gray-900 italic font-bold my-4 border bg-gray-100 p-2 break-words">
-               {bookToDelete.BookTitle || bookToDelete.title || "Unknown Title"}
-            </p>
-            <p className="text-gray-600 mb-8 border-t border-gray-200 pt-4 px-2">
-               WARNING: Executing this action will permanently delete this catalogue record and completely destroy its associated physical PDF from the AWS S3 Bucket. This action cannot be reversed.
-            </p>
-            <div className="flex justify-center gap-4">
-               <button onClick={() => setIsDeleteModalOpen(false)} className="px-6 py-2 bg-gray-200 rounded font-semibold text-gray-800 hover:bg-gray-300 transition outline-none">
-                  Cancel
-               </button>
-               <button onClick={executeDeleteRecord} className="px-6 py-2 bg-red-600 rounded font-semibold text-white hover:bg-red-700 transition shadow-md outline-none">
-                  Confirm Deletion
-               </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Migrated using global ConfirmModal Architecture */}
+      <ConfirmModal 
+         isOpen={isDeleteModalOpen && bookToDelete !== null}
+         onClose={() => setIsDeleteModalOpen(false)}
+         onConfirm={executeDeleteRecord}
+         title="Confirm Permanent Deletion"
+         message={`WARNING: Executing this action will permanently delete "${bookToDelete?.BookTitle || bookToDelete?.title || "Unknown Title"}" and completely destroy its associated physical PDF from the AWS S3 Bucket. This action cannot be reversed.`}
+         confirmText="Confirm Deletion"
+         isDanger={true}
+      />
 
-      {/* Tailwind Fixed Edit Modal overlay */}
-      {isEditModalOpen && bookToEdit && (
-        <div className="fixed inset-0 bg-black bg-opacity-[0.65] flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Edit Catalogue Record</h3>
-            <form onSubmit={executeEditRecord} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Migrated using global BaseModal boundaries Architecture */}
+      <BaseModal isOpen={isEditModalOpen && bookToEdit !== null} title="Edit Catalogue Record" maxWidth="max-w-2xl">
+         <form onSubmit={executeEditRecord} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div>
                   <label className="block text-sm font-semibold text-gray-700">Title</label>
                   <input required name="bookTitle" value={editValues.bookTitle} onChange={handleEditInputChange} className="mt-1 w-full border border-gray-300 rounded p-2 focus:border-blue-500 outline-none" />
@@ -221,14 +207,12 @@ export default function ManageCataloguePage() {
                   <label className="block text-sm font-semibold text-gray-700">Description</label>
                   <textarea name="bookDescription" value={editValues.bookDescription} onChange={handleEditInputChange} rows="3" className="mt-1 w-full border border-gray-300 rounded p-2 focus:border-blue-500 outline-none"></textarea>
                </div>
-               <div className="md:col-span-2 flex justify-end gap-3 mt-4 border-t pt-4">
-                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-5 py-2 bg-gray-200 rounded font-semibold hover:bg-gray-300 text-gray-800 transition outline-none">Cancel</button>
-                  <button type="submit" className="px-5 py-2 bg-blue-600 rounded font-semibold text-white hover:bg-blue-700 transition outline-none">Save Changes</button>
+               <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-5 py-2 bg-white border border-gray-300 rounded-md font-semibold text-gray-800 hover:bg-gray-50 transition outline-none shadow-sm">Cancel</button>
+                  <button type="submit" className="px-5 py-2 bg-blue-600 rounded-md font-bold text-white hover:bg-blue-700 transition outline-none shadow-sm">Save Changes</button>
                </div>
             </form>
-          </div>
-        </div>
-      )}
+      </BaseModal>
     </>
   );
 }

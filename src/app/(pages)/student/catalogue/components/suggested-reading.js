@@ -26,7 +26,7 @@ export function SuggestedReading({ message, onCourseSelect }) {
          <div className="py-12 flex flex-col items-center text-center max-w-lg mx-auto">
             <h3 className="text-xl font-bold text-gray-800 mb-2">Suggested Reading</h3>
             <p className="text-gray-600 mb-6">
-              Select your specific university course from the menu below to instantly view your tailored reading list.
+              Select your specific course from the menu below to instantly view your tailored reading list.
             </p>
             
             <div className="w-full max-w-sm">

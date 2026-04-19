@@ -4,74 +4,12 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 
-// --- MODAL COMPONENTS ---
-export function GenericModal({ isOpen, onClose, onSubmit, title, label, placeholder, submitText, initialValue = "" }) {
-  const [inputValue, setInputValue] = React.useState(initialValue);
-
-  // Update input carefully whenever it surfaces
-  React.useEffect(() => {
-    if (isOpen) setInputValue(initialValue);
-  }, [isOpen, initialValue]);
-
-  if (!isOpen) return null;
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (inputValue.trim() === "") return;
-    onSubmit(inputValue);
-    setInputValue("");
-  };
-
-  const handleCancel = () => {
-    setInputValue(initialValue);
-    onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="p-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {label}
-          </label>
-          <input
-            type="text"
-            autoFocus
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2ba5c7] focus:border-transparent transition-all text-gray-800"
-            placeholder={placeholder}
-          />
-          
-          <div className="mt-6 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={inputValue.trim() === ""}
-              className="px-4 py-2 text-sm font-bold text-white bg-[#2ba5c7] rounded-md hover:bg-[#228b9e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-            >
-              {submitText}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
+// --- MODAL WRAPPERS ---
+import { SingleInputModal } from "@/components/ui/modal";
 
 export function CreateFolderModal({ isOpen, onClose, onSubmit }) {
   return (
-    <GenericModal 
+    <SingleInputModal 
       isOpen={isOpen} 
       onClose={onClose} 
       onSubmit={onSubmit} 
@@ -85,7 +23,7 @@ export function CreateFolderModal({ isOpen, onClose, onSubmit }) {
 
 export function RenameModal({ isOpen, onClose, onSubmit, initialValue }) {
   return (
-    <GenericModal 
+    <SingleInputModal 
       isOpen={isOpen} 
       onClose={onClose} 
       onSubmit={onSubmit} 
@@ -97,30 +35,7 @@ export function RenameModal({ isOpen, onClose, onSubmit, initialValue }) {
     />
   );
 }
-
-export function ConfirmModal({ isOpen, onClose, onConfirm, title, message }) {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-        </div>
-        <div className="p-6">
-          <p className="text-gray-700 text-sm font-medium">{message}</p>
-          <div className="mt-6 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
-              Cancel
-            </button>
-            <button type="button" onClick={onConfirm} className="px-4 py-2 text-sm font-bold text-white bg-[#2ba5c7] rounded-md hover:bg-[#228b9e] transition-colors shadow-sm">
-              Confirm
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// ConfirmModal is now imported strictly inside notes/page.js instead!
 
 // --- CARD COMPONENTS ---
 export function FolderCard({ label, onClick, onContextMenu, draggable, onDragStart, onDragOver, onDragLeave, onDrop }) {
@@ -220,8 +135,9 @@ export function AddFileButton({ onClick }) {
  * @param {string} folderName - The name of the folder trying to be created
  * @param {number|null} parentFolderId - Optional: the folder this folder will belong to
  * @param {Function} setFolders - The React hook setter to update the frontend state seamlessly
+ * @param {Function} onError - Optional callback structurally rendering SQL conflict messages visually
  */
-export async function handleAddFolder(currentUser, folderName, parentFolderId, setFolders) {
+export async function handleAddFolder(currentUser, folderName, parentFolderId, setFolders, onError) {
   if (!currentUser) return console.error("No user logged in to create a folder for.");
 
   try {
@@ -243,7 +159,7 @@ export async function handleAddFolder(currentUser, folderName, parentFolderId, s
     }
   } catch (error) {
     if (error.response && error.response.status === 409) {
-      alert(error.response.data.error);
+      if (onError) onError(error.response.data.error);
     } else {
       console.error("Failed to create folder:", error);
     }
@@ -256,8 +172,9 @@ export async function handleAddFolder(currentUser, folderName, parentFolderId, s
  * @param {string} noteName - The name/title of the note
  * @param {number|null} parentFolderId - Optional: the folder this note will belong to
  * @param {Function} setFiles - The React hook setter to update the frontend state seamlessly
+ * @param {Function} onError - Optional callback structurally rendering SQL conflict messages visually
  */
-export async function handleAddNote(currentUser, noteName, parentFolderId, setFiles) {
+export async function handleAddNote(currentUser, noteName, parentFolderId, setFiles, onError) {
   if (!currentUser) return console.error("No user logged in to create a note for.");
 
   try {
@@ -280,7 +197,7 @@ export async function handleAddNote(currentUser, noteName, parentFolderId, setFi
     return null;
   } catch (error) {
     if (error.response && error.response.status === 409) {
-      alert(error.response.data.error);
+      if (onError) onError(error.response.data.error);
     } else {
       console.error("Failed to create note:", error);
     }
@@ -288,7 +205,7 @@ export async function handleAddNote(currentUser, noteName, parentFolderId, setFi
   }
 }
 
-export async function handleDeleteFolder(currentUser, folderId, onSuccess) {
+export async function handleDeleteFolder(currentUser, folderId, onSuccess, onError) {
   if (!currentUser) return;
   try {
     await axios.delete(`${API_URL}/notes/folders/${folderId}`, { withCredentials: true });
@@ -298,7 +215,7 @@ export async function handleDeleteFolder(currentUser, folderId, onSuccess) {
   }
 }
 
-export async function handleDeleteNote(currentUser, noteId, onSuccess) {
+export async function handleDeleteNote(currentUser, noteId, onSuccess, onError) {
   if (!currentUser) return;
   try {
     await axios.delete(`${API_URL}/notes/${noteId}`, { withCredentials: true });
@@ -308,18 +225,21 @@ export async function handleDeleteNote(currentUser, noteId, onSuccess) {
   }
 }
 
-export async function handleRenameFolder(currentUser, folderId, newName, onSuccess) {
+export async function handleRenameFolder(currentUser, folderId, newName, onSuccess, onError) {
   if (!currentUser) return;
   try {
     await axios.put(`${API_URL}/notes/folders/${folderId}`, { folderName: newName }, { withCredentials: true });
     if (onSuccess) onSuccess();
   } catch (error) {
-    if (error.response && error.response.status === 409) alert(error.response.data.error);
-    else console.error("Failed to rename folder:", error);
+    if (error.response && error.response.status === 409) {
+        if (onError) onError(error.response.data.error);
+    } else {
+        console.error("Failed to rename folder:", error);
+    }
   }
 }
 
-export async function handleRenameNote(currentUser, noteId, newName, onSuccess) {
+export async function handleRenameNote(currentUser, noteId, newName, onSuccess, onError) {
   if (!currentUser) return;
   try {
     // Safely retrieve the existing node content first to avoid wiping out the actual note body
@@ -341,29 +261,38 @@ export async function handleRenameNote(currentUser, noteId, newName, onSuccess) 
     
     if (onSuccess) onSuccess();
   } catch (error) {
-    if (error.response && error.response.status === 409) alert(error.response.data.error);
-    else console.error("Failed to rename note:", error);
+    if (error.response && error.response.status === 409) {
+        if (onError) onError(error.response.data.error);
+    } else { 
+        console.error("Failed to rename note:", error);
+    }
   }
 }
 
-export async function handleMoveFolder(currentUser, folderId, newParentId, onSuccess) {
+export async function handleMoveFolder(currentUser, folderId, newParentId, onSuccess, onError) {
   if (!currentUser) return;
   try {
     await axios.put(`${API_URL}/notes/folders/${folderId}/move`, { parentId: newParentId }, { withCredentials: true });
     if (onSuccess) onSuccess();
   } catch (error) {
-    if (error.response && (error.response.status === 409 || error.response.status === 400)) alert(error.response.data.error);
-    else console.error("Failed to move folder:", error);
+    if (error.response && (error.response.status === 409 || error.response.status === 400)) {
+       if (onError) onError(error.response.data.error);
+    } else {
+       console.error("Failed to move folder:", error);
+    }
   }
 }
 
-export async function handleMoveNote(currentUser, noteId, newFolderId, onSuccess) {
+export async function handleMoveNote(currentUser, noteId, newFolderId, onSuccess, onError) {
   if (!currentUser) return;
   try {
     await axios.put(`${API_URL}/notes/${noteId}/move`, { folderId: newFolderId }, { withCredentials: true });
     if (onSuccess) onSuccess();
   } catch (error) {
-    if (error.response && error.response.status === 409) alert(error.response.data.error);
-    else console.error("Failed to move note:", error);
+    if (error.response && error.response.status === 409) {
+       if (onError) onError(error.response.data.error);
+    } else {
+       console.error("Failed to move note:", error);
+    }
   }
 }
